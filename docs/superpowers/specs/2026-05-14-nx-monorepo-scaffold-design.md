@@ -12,6 +12,7 @@
 Establish a production-shaped foundation for the Finance Hub product described in `PROJECT_OVERVIEW.md`. The scaffold proves the architecture end-to-end with a single vertical slice (auth) so that subsequent domain specs (accounts, stocks, gold, transactions) can be implemented on a known-good base.
 
 **In scope**
+
 - Nx integrated monorepo with React (Vite) frontend and NestJS backend.
 - PostgreSQL + Prisma persistence.
 - JWT-based auth (access + refresh) with a working register → login → protected-route → logout flow.
@@ -21,6 +22,7 @@ Establish a production-shaped foundation for the Finance Hub product described i
 - Linting, formatting, type checking, and git hooks.
 
 **Out of scope**
+
 - Cash / Stocks / Gold / Transactions / Dashboard analytics (covered by future specs).
 - Market-data integrations (Section 10 of `PROJECT_OVERVIEW.md`).
 - Notifications, AI, import/export.
@@ -32,25 +34,25 @@ Establish a production-shaped foundation for the Finance Hub product described i
 
 ## 2. Architectural Choices (summary)
 
-| Decision | Choice |
-|---|---|
-| Monorepo tool | Nx (integrated style) |
-| Package manager | pnpm |
-| Node version | 20 LTS |
-| Backend framework | NestJS |
-| Frontend framework | React 18 via Vite |
-| Routing | React Router v6 |
-| Server state | TanStack Query |
-| Client state | zustand (auth only) |
-| UI | Tailwind CSS + shadcn/ui |
-| Database | PostgreSQL (host-installed) |
-| ORM | Prisma |
-| API style | REST under `/api` |
-| API contract | Shared TS types lib + `@nestjs/swagger` for live docs (no codegen) |
-| Validation | `class-validator` (BE), `zod` for env (BE + FE) |
-| Auth | JWT access (15m) + opaque refresh token (7d, httpOnly cookie, hashed at rest) |
-| Unit testing | Jest |
-| E2E testing | Playwright |
+| Decision           | Choice                                                                        |
+| ------------------ | ----------------------------------------------------------------------------- |
+| Monorepo tool      | Nx (integrated style)                                                         |
+| Package manager    | pnpm                                                                          |
+| Node version       | 20 LTS                                                                        |
+| Backend framework  | NestJS                                                                        |
+| Frontend framework | React 18 via Vite                                                             |
+| Routing            | React Router v6                                                               |
+| Server state       | TanStack Query                                                                |
+| Client state       | zustand (auth only)                                                           |
+| UI                 | Tailwind CSS + shadcn/ui                                                      |
+| Database           | PostgreSQL (host-installed)                                                   |
+| ORM                | Prisma                                                                        |
+| API style          | REST under `/api`                                                             |
+| API contract       | Shared TS types lib + `@nestjs/swagger` for live docs (no codegen)            |
+| Validation         | `class-validator` (BE), `zod` for env (BE + FE)                               |
+| Auth               | JWT access (15m) + opaque refresh token (7d, httpOnly cookie, hashed at rest) |
+| Unit testing       | Jest                                                                          |
+| E2E testing        | Playwright                                                                    |
 
 ---
 
@@ -84,6 +86,7 @@ finance-hub/
 ```
 
 **Notes**
+
 - Single root `package.json` and `node_modules` (Nx integrated style).
 - `prisma/` lives at the root following Prisma CLI defaults. If a second DB consumer (worker, CLI) appears later, it can be promoted to `libs/database/`.
 - All libs are non-buildable; consumers import via TS path aliases.
@@ -131,6 +134,7 @@ apps/api/src/
 ```
 
 **Conventions**
+
 - `modules/` for feature modules; `common/` for cross-cutting building blocks; `config/` and `prisma/` for infrastructure.
 - Global API prefix `/api` (routes become `/api/auth/login`, etc.).
 - Global `ValidationPipe` with `class-validator` + `class-transformer`. DTOs are classes so Swagger picks them up automatically.
@@ -139,6 +143,7 @@ apps/api/src/
 - Swagger UI mounted at `/api/docs`.
 
 **Required environment variables (API)**
+
 - `DATABASE_URL` — Postgres connection string.
 - `JWT_ACCESS_SECRET` — signing secret for access tokens.
 - `JWT_ACCESS_TTL` — access token TTL (default `15m`).
@@ -191,14 +196,17 @@ apps/web/src/
 ```
 
 **Pages vs Features rule of thumb**
+
 - A `page` exists because a URL exists. Pages are thin — usually under ~50 lines — and compose feature components.
 - A `feature` is a business capability (auth, accounts, stocks, …). Features know nothing about routing.
 - Cross-feature imports go through `features/<name>/index.ts`.
 
 **Required environment variables (Web)**
+
 - `VITE_API_URL` — API base URL (e.g. `http://localhost:3000/api`).
 
 **Auth token strategy on the FE**
+
 - Access token: kept only in the zustand store (memory). Lost on hard refresh — recovered by calling `/auth/refresh` on app boot if the refresh cookie is present.
 - Refresh token: never readable by JS. Stored as `HttpOnly; Secure; SameSite=Lax` cookie scoped to `/api/auth`.
 - `api-client.ts` intercepts 401s and retries once after calling `/auth/refresh`. If refresh fails, store is cleared and user is bounced to `/login`.
@@ -208,6 +216,7 @@ apps/web/src/
 ## 6. Shared Libraries
 
 ### `libs/shared-api-types/`
+
 Pure TypeScript. No runtime dependencies. Consumed by both `apps/api` and `apps/web`.
 
 ```
@@ -220,6 +229,7 @@ src/
 NestJS DTO classes implement these interfaces so the wire shape stays in sync with the shared contract.
 
 ### `libs/shared-utils/`
+
 Pure functions safe for Node and the browser. No DOM, no Node-only APIs.
 
 ```
@@ -230,6 +240,7 @@ src/
 ```
 
 ### `libs/web-ui/`
+
 FE-only. Centralizes Tailwind theme and shadcn components.
 
 ```
@@ -284,6 +295,7 @@ model RefreshToken {
 ```
 
 **Design notes**
+
 - UUID PKs everywhere.
 - `passwordHash` via `bcrypt` (cost factor 12).
 - Refresh tokens are opaque random strings (32 bytes hex). Only their hash is persisted. Lookup is by `tokenHash`.
@@ -297,14 +309,14 @@ model RefreshToken {
 
 ### API endpoints
 
-| Method | Path                | Auth   | Body / Response |
-|--------|---------------------|--------|-----------------|
-| POST   | `/api/auth/register`| public | `{email, password, fullName?}` → `{user, accessToken}` + sets refresh cookie |
-| POST   | `/api/auth/login`   | public | `{email, password}` → `{user, accessToken}` + sets refresh cookie |
-| POST   | `/api/auth/refresh` | cookie | refresh cookie → `{accessToken}` + rotated refresh cookie |
-| POST   | `/api/auth/logout`  | cookie | revokes refresh token, clears cookie |
-| GET    | `/api/users/me`     | bearer | `{id, email, fullName, createdAt}` |
-| GET    | `/api/health`       | public | `{status: 'ok', timestamp}` |
+| Method | Path                 | Auth   | Body / Response                                                              |
+| ------ | -------------------- | ------ | ---------------------------------------------------------------------------- |
+| POST   | `/api/auth/register` | public | `{email, password, fullName?}` → `{user, accessToken}` + sets refresh cookie |
+| POST   | `/api/auth/login`    | public | `{email, password}` → `{user, accessToken}` + sets refresh cookie            |
+| POST   | `/api/auth/refresh`  | cookie | refresh cookie → `{accessToken}` + rotated refresh cookie                    |
+| POST   | `/api/auth/logout`   | cookie | revokes refresh token, clears cookie                                         |
+| GET    | `/api/users/me`      | bearer | `{id, email, fullName, createdAt}`                                           |
+| GET    | `/api/health`        | public | `{status: 'ok', timestamp}`                                                  |
 
 ### Token lifecycle
 
@@ -323,6 +335,7 @@ model RefreshToken {
 ### E2E test (Playwright)
 
 `apps/web-e2e/src/auth.spec.ts`:
+
 1. Visit `/dashboard` → expect redirect to `/login`.
 2. Click "Create account" → fill register form → submit.
 3. Expect redirect to `/dashboard` and the user's email visible.
@@ -335,6 +348,7 @@ Tests use a dedicated test database (`DATABASE_URL_TEST`), reset between runs vi
 ## 9. Tooling & Quality Gates
 
 **Linting & formatting**
+
 - ESLint with Nx preset + `@typescript-eslint`.
 - Prettier (single root config).
 - `@nx/enforce-module-boundaries` rules:
@@ -344,30 +358,33 @@ Tests use a dedicated test database (`DATABASE_URL_TEST`), reset between runs vi
   - `libs/web-ui` cannot import from `libs/shared-api-types` (UI primitives are domain-agnostic).
 
 **Type checking**
+
 - `tsconfig.base.json` with `strict: true`, `noUncheckedIndexedAccess: true`, `noImplicitOverride: true`.
 - `pnpm typecheck` → `nx run-many -t typecheck`.
 
 **Git hooks**
+
 - `husky` + `lint-staged` pre-commit: ESLint + Prettier on staged files only.
 - Pre-push: `nx affected -t lint typecheck test`.
 
 **Root scripts**
 
-| Script | Behavior |
-|---|---|
-| `pnpm dev` | `nx run-many -t serve -p api,web` (parallel) |
-| `pnpm dev:api` / `pnpm dev:web` | Run a single app |
-| `pnpm build` | `nx run-many -t build` |
-| `pnpm test` | `nx run-many -t test` |
-| `pnpm test:e2e` | `nx run-many -t e2e` |
-| `pnpm lint` | `nx run-many -t lint` |
-| `pnpm typecheck` | `nx run-many -t typecheck` |
-| `pnpm db:migrate` | `prisma migrate dev` |
-| `pnpm db:reset` | `prisma migrate reset` |
-| `pnpm db:studio` | `prisma studio` |
-| `pnpm db:generate` | `prisma generate` |
+| Script                          | Behavior                                     |
+| ------------------------------- | -------------------------------------------- |
+| `pnpm dev`                      | `nx run-many -t serve -p api,web` (parallel) |
+| `pnpm dev:api` / `pnpm dev:web` | Run a single app                             |
+| `pnpm build`                    | `nx run-many -t build`                       |
+| `pnpm test`                     | `nx run-many -t test`                        |
+| `pnpm test:e2e`                 | `nx run-many -t e2e`                         |
+| `pnpm lint`                     | `nx run-many -t lint`                        |
+| `pnpm typecheck`                | `nx run-many -t typecheck`                   |
+| `pnpm db:migrate`               | `prisma migrate dev`                         |
+| `pnpm db:reset`                 | `prisma migrate reset`                       |
+| `pnpm db:studio`                | `prisma studio`                              |
+| `pnpm db:generate`              | `prisma generate`                            |
 
 **Environment files**
+
 - `.env.example` committed at the root.
 - `.env` (gitignored) loaded by both apps.
 - `.env.test` for the test database.

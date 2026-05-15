@@ -11,6 +11,7 @@
 **Spec:** `docs/superpowers/specs/2026-05-14-nx-monorepo-scaffold-design.md`
 
 **Prerequisites for the engineer running this plan:**
+
 - Node 20 LTS installed (verify with `node -v` showing `v20.x.x`).
 - pnpm 9.x installed globally (`npm i -g pnpm@9`; verify with `pnpm -v`).
 - PostgreSQL 16 installed and running on the host, with a superuser available.
@@ -174,17 +175,20 @@ Goal: turn the empty repo into a working Nx + pnpm workspace with strict TypeScr
 ### Task 1.1: Bootstrap the Nx workspace into the existing directory
 
 **Files:**
+
 - Create: `nx.json`, `package.json`, `pnpm-workspace.yaml`, `tsconfig.base.json`, `.prettierrc`, `.prettierignore`, `.vscode/extensions.json` (auto-generated)
 - Modify: `.gitignore` (extended by Nx)
 
 - [ ] **Step 1: Verify prerequisites**
 
 Run:
+
 ```bash
 node -v
 pnpm -v
 psql --version
 ```
+
 Expected: `v20.x.x`, `9.x.x`, `psql (PostgreSQL) 16.x`. If any is missing, install before continuing.
 
 - [ ] **Step 2: Create the workspace in-place using a temp directory and move**
@@ -192,6 +196,7 @@ Expected: `v20.x.x`, `9.x.x`, `psql (PostgreSQL) 16.x`. If any is missing, insta
 `create-nx-workspace` insists on creating its own directory. We'll generate next to the repo and move the contents in.
 
 Run:
+
 ```bash
 cd /Users/hungnguyen/Desktop/Code
 pnpm dlx create-nx-workspace@20 finance-hub-tmp \
@@ -202,11 +207,13 @@ pnpm dlx create-nx-workspace@20 finance-hub-tmp \
   --useGitHub=false \
   --interactive=false
 ```
+
 Expected: a new `finance-hub-tmp/` directory containing `nx.json`, `package.json`, `pnpm-workspace.yaml`, `tsconfig.base.json`, `.prettierrc`, `apps/`, `libs/`, `node_modules/`, `.vscode/`, and its own `.gitignore` and `.git/`.
 
 - [ ] **Step 3: Merge generated files into the existing repo**
 
 Run:
+
 ```bash
 cd /Users/hungnguyen/Desktop/Code/finance-hub-tmp
 rm -rf .git
@@ -227,20 +234,24 @@ for item in ../finance-hub-tmp/.* ../finance-hub-tmp/*; do
 done
 rm -rf ../finance-hub-tmp
 ```
+
 Expected: `ls -la` in `finance-hub/` now shows `nx.json`, `package.json`, `pnpm-workspace.yaml`, `tsconfig.base.json`, `node_modules/`, `apps/` (empty), `libs/` (empty), `docs/`, `.gitignore`, `.prettierrc`, `.vscode/`.
 
 - [ ] **Step 4: Verify the workspace is healthy**
 
 Run:
+
 ```bash
 pnpm install
 pnpm exec nx report
 ```
+
 Expected: `pnpm install` completes; `nx report` prints version info (Nx 20.x) and lists installed plugins (`nx`, `@nx/js` at minimum).
 
 - [ ] **Step 5: Pin Node version**
 
 Create `.nvmrc`:
+
 ```
 20
 ```
@@ -248,6 +259,7 @@ Create `.nvmrc`:
 - [ ] **Step 6: Set `package.json` engines**
 
 Modify `package.json` to add the `engines` block at the top level (alongside `name`, `version`):
+
 ```json
   "engines": {
     "node": "^20.0.0",
@@ -255,6 +267,7 @@ Modify `package.json` to add the `engines` block at the top level (alongside `na
   },
   "packageManager": "pnpm@9.15.0",
 ```
+
 (Adjust pnpm patch to match `pnpm -v` output.)
 
 - [ ] **Step 7: Commit**
@@ -271,14 +284,17 @@ git commit -m "chore: bootstrap Nx 20 workspace with pnpm
 ### Task 1.2: Enforce strict TypeScript globally and define path aliases
 
 **Files:**
+
 - Modify: `tsconfig.base.json`
 
 - [ ] **Step 1: Read the current `tsconfig.base.json`**
 
 Run:
+
 ```bash
 cat tsconfig.base.json
 ```
+
 Expected: file exists with `compilerOptions` and probably an empty or default `paths` object.
 
 - [ ] **Step 2: Replace `tsconfig.base.json` with the strict baseline**
@@ -320,10 +336,12 @@ Expected: file exists with `compilerOptions` and probably an empty or default `p
 - [ ] **Step 3: Verify the workspace still builds**
 
 Run:
+
 ```bash
 pnpm exec nx report
 pnpm exec tsc --noEmit -p tsconfig.base.json
 ```
+
 Expected: both commands exit 0. (The `tsc --noEmit` will succeed even with no source files yet because `tsconfig.base.json` has no `include`.)
 
 - [ ] **Step 4: Commit**
@@ -336,6 +354,7 @@ git commit -m "chore(tsconfig): enable strict mode and define lib path aliases"
 ### Task 1.3: Configure Prettier explicitly
 
 **Files:**
+
 - Create: `.prettierrc` (overwrite Nx default), `.prettierignore`
 
 - [ ] **Step 1: Write `.prettierrc`**
@@ -368,9 +387,11 @@ prisma/migrations
 - [ ] **Step 3: Verify Prettier runs**
 
 Run:
+
 ```bash
 pnpm exec prettier --check "**/*.{ts,tsx,json,md}"
 ```
+
 Expected: either "All matched files use Prettier code style!" or a list of files needing formatting. Run `pnpm exec prettier --write "**/*.{ts,tsx,json,md}"` if needed, then re-check.
 
 - [ ] **Step 4: Commit**
@@ -383,6 +404,7 @@ git commit -m "chore: configure Prettier (single quotes, trailing comma, 100 col
 ### Task 1.4: Create `.env.example` and `.env`
 
 **Files:**
+
 - Create: `.env.example`, `.env`
 
 - [ ] **Step 1: Write `.env.example`**
@@ -409,15 +431,19 @@ VITE_API_URL=http://localhost:3000/api
 - [ ] **Step 2: Copy to `.env` for local use**
 
 Run:
+
 ```bash
 cp .env.example .env
 # Replace the JWT secret with a real value:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
+
 Manually paste the printed hex into `.env`'s `JWT_ACCESS_SECRET=...` line. Verify `.env` is git-ignored:
+
 ```bash
 git check-ignore .env
 ```
+
 Expected: prints `.env`.
 
 - [ ] **Step 3: Commit (only `.env.example`)**
@@ -430,24 +456,30 @@ git commit -m "chore: document required environment variables in .env.example"
 ### Task 1.5: Install and configure husky + lint-staged
 
 **Files:**
+
 - Create: `.husky/pre-commit`, `.husky/pre-push`
 - Modify: `package.json` (add `lint-staged` config + `prepare` script)
 
 - [ ] **Step 1: Install dev deps**
 
 Run:
+
 ```bash
 pnpm add -Dw husky lint-staged
 ```
+
 Expected: both packages added to root `devDependencies`.
 
 - [ ] **Step 2: Add `prepare` script and `lint-staged` config to `package.json`**
 
 In the `scripts` block, add:
+
 ```json
     "prepare": "husky"
 ```
+
 Add a new top-level block:
+
 ```json
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": ["prettier --write", "eslint --fix"],
@@ -458,9 +490,11 @@ Add a new top-level block:
 - [ ] **Step 3: Initialize husky**
 
 Run:
+
 ```bash
 pnpm exec husky init
 ```
+
 Expected: creates `.husky/pre-commit` with a default `pnpm test` line, and adds a `prepare` script (we already have one — confirm it isn't duplicated).
 
 - [ ] **Step 4: Overwrite `.husky/pre-commit`**
@@ -474,34 +508,41 @@ pnpm exec lint-staged
 ```bash
 pnpm exec nx affected -t lint typecheck test --base=HEAD~1
 ```
+
 (Using `HEAD~1` so initial pushes on a fresh branch still work; CI is out of scope per the spec.)
 
 - [ ] **Step 6: Verify hooks are executable**
 
 Run:
+
 ```bash
 chmod +x .husky/pre-commit .husky/pre-push
 ls -la .husky/
 ```
+
 Expected: both files have execute bit set.
 
 - [ ] **Step 7: Smoke-test the hook**
 
 Run:
+
 ```bash
 git add .
 echo "// noop" > tmp-hook-test.ts
 git add tmp-hook-test.ts
 git commit -m "test: husky smoke"
 ```
+
 Expected: lint-staged runs prettier on the file (it may error because no ESLint config exists yet — that's fine if ESLint errors are about "no eslint config found"). If commit succeeds:
+
 ```bash
 git reset --soft HEAD~1
 git restore --staged tmp-hook-test.ts
 rm tmp-hook-test.ts
 ```
 
-If lint-staged crashes because ESLint isn't configured yet, that's expected. Add `--no-verify` for *this one commit only*, and let Task 1.6 install ESLint properly:
+If lint-staged crashes because ESLint isn't configured yet, that's expected. Add `--no-verify` for _this one commit only_, and let Task 1.6 install ESLint properly:
+
 ```bash
 git commit --no-verify -m "test: husky smoke"
 # then revert as above
@@ -517,27 +558,33 @@ git commit -m "chore: add husky pre-commit (lint-staged) and pre-push (nx affect
 ### Task 1.6: Add ESLint at the root with `@nx/enforce-module-boundaries`
 
 **Files:**
+
 - Modify: `package.json` (Nx generators add ESLint deps), `eslint.config.mjs` (created by `nx add @nx/eslint`)
 
 - [ ] **Step 1: Add the Nx ESLint plugin**
 
 Run:
+
 ```bash
 pnpm exec nx add @nx/eslint
 ```
+
 Expected: installs `@nx/eslint`, `eslint`, `eslint-config-prettier`, `@typescript-eslint/*`, and writes `eslint.config.mjs` at the root.
 
 - [ ] **Step 2: Read the generated `eslint.config.mjs`**
 
 Run:
+
 ```bash
 cat eslint.config.mjs
 ```
+
 Expected: a flat config exporting an array that already includes `@nx/enforce-module-boundaries` with default depConstraints (`*` → `*`).
 
 - [ ] **Step 3: Tighten the module-boundary rules**
 
 Find the `@nx/enforce-module-boundaries` rule entry. Replace its `depConstraints` array with:
+
 ```js
         depConstraints: [
           // App tier
@@ -564,14 +611,17 @@ Find the `@nx/enforce-module-boundaries` rule entry. Replace its `depConstraints
           },
         ],
 ```
+
 (Apps and libs will be tagged appropriately when generated in later tasks.)
 
 - [ ] **Step 4: Verify ESLint runs**
 
 Run:
+
 ```bash
 pnpm exec eslint .
 ```
+
 Expected: exits 0 (nothing to lint yet other than the config files themselves).
 
 - [ ] **Step 5: Commit**
@@ -584,6 +634,7 @@ git commit -m "chore(eslint): enforce module boundaries via Nx scope tags"
 ### Task 1.7: Add root npm scripts
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Replace the `scripts` block in `package.json`**
@@ -609,9 +660,11 @@ git commit -m "chore(eslint): enforce module boundaries via Nx scope tags"
 - [ ] **Step 2: Verify scripts resolve**
 
 Run:
+
 ```bash
 pnpm run --silent lint
 ```
+
 Expected: prints `No projects matched the patterns/criteria` (no projects exist yet — that's fine, the script is wired).
 
 - [ ] **Step 3: Commit**
@@ -630,6 +683,7 @@ Goal: create the three shared libraries before any consuming app exists, so apps
 ### Task 2.1: Create `libs/shared-api-types`
 
 **Files:**
+
 - Create via generator: `libs/shared-api-types/{project.json,tsconfig.json,tsconfig.lib.json,src/index.ts}`
 - Create: `libs/shared-api-types/src/common.ts`, `libs/shared-api-types/src/auth.ts`
 - Modify: `libs/shared-api-types/src/index.ts`
@@ -637,14 +691,17 @@ Goal: create the three shared libraries before any consuming app exists, so apps
 - [ ] **Step 1: Add the `@nx/js` plugin if not present**
 
 Run:
+
 ```bash
 pnpm exec nx add @nx/js
 ```
+
 Expected: installs `@nx/js` (skip if already installed).
 
 - [ ] **Step 2: Generate the library**
 
 Run:
+
 ```bash
 pnpm exec nx g @nx/js:lib libs/shared-api-types \
   --name=shared-api-types \
@@ -655,6 +712,7 @@ pnpm exec nx g @nx/js:lib libs/shared-api-types \
   --tags=scope:shared \
   --no-interactive
 ```
+
 Expected: scaffolds the library with `project.json` containing `"tags": ["scope:shared"]`.
 
 - [ ] **Step 3: Create `libs/shared-api-types/src/common.ts`**
@@ -720,10 +778,12 @@ export * from './auth';
 - [ ] **Step 6: Verify**
 
 Run:
+
 ```bash
 pnpm exec nx lint shared-api-types
 pnpm exec tsc --noEmit -p libs/shared-api-types/tsconfig.lib.json
 ```
+
 Expected: both exit 0.
 
 - [ ] **Step 7: Commit**
@@ -736,12 +796,14 @@ git commit -m "feat(shared-api-types): add FE/BE shared DTO types (auth, common)
 ### Task 2.2: Create `libs/shared-utils` with TDD-built helpers
 
 **Files:**
+
 - Create via generator: `libs/shared-utils/{project.json,tsconfig.json,tsconfig.lib.json,tsconfig.spec.json,jest.config.ts,src/index.ts}`
 - Create: `libs/shared-utils/src/{money.ts,money.spec.ts,date.ts,date.spec.ts}`
 
 - [ ] **Step 1: Generate the library with Jest**
 
 Run:
+
 ```bash
 pnpm exec nx g @nx/js:lib libs/shared-utils \
   --name=shared-utils \
@@ -756,6 +818,7 @@ pnpm exec nx g @nx/js:lib libs/shared-utils \
 - [ ] **Step 2: Write the failing `money.spec.ts`**
 
 Create `libs/shared-utils/src/money.spec.ts`:
+
 ```ts
 import { formatMoney, parseMoney } from './money';
 
@@ -795,9 +858,11 @@ describe('parseMoney', () => {
 - [ ] **Step 3: Run the test to verify it fails**
 
 Run:
+
 ```bash
 pnpm exec nx test shared-utils
 ```
+
 Expected: FAIL with "Cannot find module './money'".
 
 - [ ] **Step 4: Implement `libs/shared-utils/src/money.ts`**
@@ -822,14 +887,17 @@ export function parseMoney(input: string): number {
 - [ ] **Step 5: Run the test to verify it passes**
 
 Run:
+
 ```bash
 pnpm exec nx test shared-utils
 ```
+
 Expected: all `money` tests PASS. (The `€` test depends on Node ICU full data, which is the Node 20 default — confirm.)
 
 - [ ] **Step 6: Write the failing `date.spec.ts`**
 
 Create `libs/shared-utils/src/date.spec.ts`:
+
 ```ts
 import { toIsoDateString, isIsoDateString } from './date';
 
@@ -855,12 +923,15 @@ describe('isIsoDateString', () => {
 - [ ] **Step 7: Run to verify failure, then implement**
 
 Run:
+
 ```bash
 pnpm exec nx test shared-utils
 ```
+
 Expected: FAIL with "Cannot find module './date'".
 
 Create `libs/shared-utils/src/date.ts`:
+
 ```ts
 import type { IsoDateString } from '@finance-hub/shared-api-types';
 
@@ -878,9 +949,11 @@ export function isIsoDateString(value: string): value is IsoDateString {
 - [ ] **Step 8: Run to verify pass**
 
 Run:
+
 ```bash
 pnpm exec nx test shared-utils
 ```
+
 Expected: all tests PASS.
 
 - [ ] **Step 9: Update `libs/shared-utils/src/index.ts`**
@@ -893,10 +966,12 @@ export * from './date';
 - [ ] **Step 10: Final verification**
 
 Run:
+
 ```bash
 pnpm exec nx lint shared-utils
 pnpm exec nx test shared-utils
 ```
+
 Expected: both exit 0.
 
 - [ ] **Step 11: Commit**
@@ -909,12 +984,14 @@ git commit -m "feat(shared-utils): add money + date helpers with Jest tests"
 ### Task 2.3: Create `libs/web-ui` (Tailwind preset + shadcn primitives)
 
 **Files:**
+
 - Create via generator: `libs/web-ui/{project.json,tsconfig.json,src/index.ts}`
 - Create: `libs/web-ui/tailwind.preset.js`, `libs/web-ui/src/{lib/cn.ts,styles/globals.css,components/ui/{button,input,label,card}.tsx}`
 
 - [ ] **Step 1: Generate the library**
 
 Run:
+
 ```bash
 pnpm exec nx g @nx/js:lib libs/web-ui \
   --name=web-ui \
@@ -929,6 +1006,7 @@ pnpm exec nx g @nx/js:lib libs/web-ui \
 - [ ] **Step 2: Install peer deps**
 
 Run:
+
 ```bash
 pnpm add -w react react-dom
 pnpm add -Dw @types/react @types/react-dom clsx tailwind-merge \
@@ -1055,8 +1133,7 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {}
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {}
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, ...props }, ref) => (
@@ -1100,11 +1177,7 @@ export const Label = React.forwardRef<
   HTMLLabelElement,
   React.LabelHTMLAttributes<HTMLLabelElement>
 >(({ className, ...props }, ref) => (
-  <label
-    ref={ref}
-    className={cn('text-sm font-medium leading-none', className)}
-    {...props}
-  />
+  <label ref={ref} className={cn('text-sm font-medium leading-none', className)} {...props} />
 ));
 Label.displayName = 'Label';
 ```
@@ -1161,10 +1234,12 @@ export { Card, CardHeader, CardTitle, CardContent } from './components/ui/card';
 - [ ] **Step 11: Verify**
 
 Run:
+
 ```bash
 pnpm exec nx lint web-ui
 pnpm exec tsc --noEmit -p libs/web-ui/tsconfig.lib.json
 ```
+
 Expected: both exit 0.
 
 - [ ] **Step 12: Commit**
@@ -1183,11 +1258,13 @@ Goal: a NestJS app boots, validates env, connects to Prisma, and serves `GET /ap
 ### Task 3.1: Generate the NestJS app
 
 **Files:**
+
 - Create via generator: `apps/api/**`, `apps/api-e2e/**`
 
 - [ ] **Step 1: Add the NestJS plugin**
 
 Run:
+
 ```bash
 pnpm exec nx add @nx/nest
 ```
@@ -1195,6 +1272,7 @@ pnpm exec nx add @nx/nest
 - [ ] **Step 2: Generate the app**
 
 Run:
+
 ```bash
 pnpm exec nx g @nx/nest:app apps/api \
   --name=api \
@@ -1205,15 +1283,18 @@ pnpm exec nx g @nx/nest:app apps/api \
   --tags=scope:api \
   --no-interactive
 ```
+
 Expected: scaffolds `apps/api/` and `apps/api-e2e/`. The boilerplate controller will be removed in Task 3.3.
 
 - [ ] **Step 3: Verify the app builds and tests pass**
 
 Run:
+
 ```bash
 pnpm exec nx build api
 pnpm exec nx test api
 ```
+
 Expected: both exit 0.
 
 - [ ] **Step 4: Commit**
@@ -1226,11 +1307,13 @@ git commit -m "feat(api): scaffold NestJS app with Jest + eslint"
 ### Task 3.2: Install runtime deps and configure env validation (TDD)
 
 **Files:**
+
 - Create: `apps/api/src/config/env.validation.ts`, `apps/api/src/config/env.validation.spec.ts`, `apps/api/src/config/config.module.ts`
 
 - [ ] **Step 1: Install deps**
 
 Run:
+
 ```bash
 pnpm add -w @nestjs/config @nestjs/jwt @nestjs/passport @nestjs/swagger \
   passport passport-jwt bcrypt cookie-parser class-validator class-transformer zod
@@ -1280,9 +1363,11 @@ describe('validateEnv', () => {
 - [ ] **Step 3: Run to verify failure**
 
 Run:
+
 ```bash
 pnpm exec nx test api --testPathPattern=env.validation
 ```
+
 Expected: FAIL — "Cannot find module './env.validation'".
 
 - [ ] **Step 4: Implement `apps/api/src/config/env.validation.ts`**
@@ -1300,7 +1385,12 @@ const schema = z.object({
   CORS_ORIGIN: z
     .string()
     .default('http://localhost:4200')
-    .transform((s) => s.split(',').map((part) => part.trim()).filter(Boolean)),
+    .transform((s) =>
+      s
+        .split(',')
+        .map((part) => part.trim())
+        .filter(Boolean),
+    ),
   COOKIE_DOMAIN: z.string().optional(),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
@@ -1320,9 +1410,11 @@ export function validateEnv(raw: Record<string, unknown>): AppConfig {
 - [ ] **Step 5: Run to verify pass**
 
 Run:
+
 ```bash
 pnpm exec nx test api --testPathPattern=env.validation
 ```
+
 Expected: all 4 tests PASS.
 
 - [ ] **Step 6: Create `apps/api/src/config/config.module.ts`**
@@ -1354,6 +1446,7 @@ git commit -m "feat(api/config): zod-validated env loader with Jest tests"
 ### Task 3.3: Add Prisma schema and PrismaService
 
 **Files:**
+
 - Create: `prisma/schema.prisma`, `apps/api/src/prisma/{prisma.module.ts,prisma.service.ts}`
 - Modify: `package.json` (Prisma deps)
 - Delete: `apps/api/src/app/` (the Nx-generated `app.controller.ts`, `app.service.ts`, `app.module.ts` if they live in `app/`)
@@ -1361,6 +1454,7 @@ git commit -m "feat(api/config): zod-validated env loader with Jest tests"
 - [ ] **Step 1: Install Prisma**
 
 Run:
+
 ```bash
 pnpm add -w @prisma/client
 pnpm add -Dw prisma
@@ -1369,6 +1463,7 @@ pnpm add -Dw prisma
 - [ ] **Step 2: Write `prisma/schema.prisma`**
 
 Create the directory and file:
+
 ```bash
 mkdir -p prisma
 ```
@@ -1411,13 +1506,17 @@ model RefreshToken {
 - [ ] **Step 3: Run the first migration against the dev DB**
 
 Run (requires `.env`'s `DATABASE_URL` to point at an empty database):
+
 ```bash
 pnpm db:migrate -- --name init
 ```
+
 Expected: prompts for migration name (already provided), creates `prisma/migrations/<timestamp>_init/migration.sql`, applies it, generates `@prisma/client`. Verify with `psql`:
+
 ```bash
 psql "$DATABASE_URL" -c "\dt"
 ```
+
 Expected: shows `User`, `RefreshToken`, `_prisma_migrations`.
 
 - [ ] **Step 4: Write `apps/api/src/prisma/prisma.service.ts`**
@@ -1462,6 +1561,7 @@ git commit -m "feat(api/prisma): add User + RefreshToken schema and PrismaServic
 ### Task 3.4: Wire `AppModule`, Swagger, validation, CORS, cookies, and a health endpoint (TDD)
 
 **Files:**
+
 - Create: `apps/api/src/modules/health/{health.controller.ts,health.controller.spec.ts}`
 - Modify: `apps/api/src/app.module.ts` (move out of `app/` subfolder if generator placed it there), `apps/api/src/main.ts`
 - Delete: Nx-generated `apps/api/src/app/*.ts` boilerplate
@@ -1475,6 +1575,7 @@ rm -rf apps/api/src/app
 - [ ] **Step 2: Write failing `health.controller.spec.ts`**
 
 Create `apps/api/src/modules/health/health.controller.spec.ts`:
+
 ```ts
 import { Test } from '@nestjs/testing';
 import { HealthController } from './health.controller';
@@ -1500,9 +1601,11 @@ describe('HealthController', () => {
 - [ ] **Step 3: Run to verify failure**
 
 Run:
+
 ```bash
 pnpm exec nx test api --testPathPattern=health
 ```
+
 Expected: FAIL — "Cannot find module './health.controller'".
 
 - [ ] **Step 4: Implement `apps/api/src/modules/health/health.controller.ts`**
@@ -1523,6 +1626,7 @@ export class HealthController {
 ```
 
 (Inline note above is just guidance — the actual final file:)
+
 ```ts
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -1540,9 +1644,11 @@ export class HealthController {
 - [ ] **Step 5: Run to verify pass**
 
 Run:
+
 ```bash
 pnpm exec nx test api --testPathPattern=health
 ```
+
 Expected: PASS.
 
 - [ ] **Step 6: Write `apps/api/src/app.module.ts`**
@@ -1604,6 +1710,7 @@ bootstrap();
 - [ ] **Step 8: Run the API and smoke-test**
 
 Run:
+
 ```bash
 pnpm dev:api &
 sleep 5
@@ -1611,6 +1718,7 @@ curl -s http://localhost:3000/api/health
 curl -s -o /dev/null -w '%{http_code}\n' http://localhost:3000/api/docs
 kill %1 2>/dev/null || true
 ```
+
 Expected: `health` returns `{"status":"ok","timestamp":"..."}`; `/api/docs` returns `200`.
 
 - [ ] **Step 9: Commit**
@@ -1629,6 +1737,7 @@ Goal: working register/login/refresh/logout endpoints with JWT access + rotation
 ### Task 4.1: DTOs
 
 **Files:**
+
 - Create: `apps/api/src/modules/auth/dto/{register.dto.ts,login.dto.ts}`
 
 - [ ] **Step 1: Write `register.dto.ts`**
@@ -1686,6 +1795,7 @@ git commit -m "feat(api/auth): RegisterDto and LoginDto implementing shared-api-
 ### Task 4.2: `AuthService` (TDD) — register, login, refresh, logout
 
 **Files:**
+
 - Create: `apps/api/src/modules/auth/{auth.service.ts,auth.service.spec.ts}`
 
 - [ ] **Step 1: Write the failing test `auth.service.spec.ts`**
@@ -1769,7 +1879,11 @@ describe('AuthService.register', () => {
       },
     });
 
-    const result = await service.register({ email: 'a@b.com', password: 'password123', fullName: 'A' });
+    const result = await service.register({
+      email: 'a@b.com',
+      password: 'password123',
+      fullName: 'A',
+    });
 
     expect(result.user.email).toBe('a@b.com');
     expect(result.accessToken).toBe('signed.jwt.token');
@@ -1942,20 +2056,18 @@ describe('AuthService.logout', () => {
 - [ ] **Step 2: Run to verify failure**
 
 Run:
+
 ```bash
 pnpm exec nx test api --testPathPattern=auth.service
 ```
+
 Expected: FAIL — "Cannot find module './auth.service'".
 
 - [ ] **Step 3: Implement `apps/api/src/modules/auth/auth.service.ts`**
 
 ```ts
 import { randomBytes } from 'node:crypto';
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -2003,7 +2115,9 @@ export class AuthService {
     return this.issueTokens(user);
   }
 
-  async refresh(presentedToken: string): Promise<RefreshResponse & { refreshToken: string; refreshTokenExpiresAt: Date }> {
+  async refresh(
+    presentedToken: string,
+  ): Promise<RefreshResponse & { refreshToken: string; refreshTokenExpiresAt: Date }> {
     const row = await this.findActiveRefreshToken(presentedToken);
     if (!row) throw new UnauthorizedException('Invalid refresh token');
 
@@ -2095,22 +2209,21 @@ export class AuthService {
   // accordingly. For this iteration we'll use sha256 (fast, non-reversible) for
   // lookup and skip bcrypt — sha256(random 256-bit) is safe for this use case
   // because the input is high-entropy and we don't need slow hashing.
-  private async findActiveRefreshToken(token: string): Promise<
-    | {
-        id: string;
-        userId: string;
-        tokenHash: string;
-        expiresAt: Date;
-        revokedAt: Date | null;
-        user: { id: string; email: string; fullName: string | null; createdAt: Date };
-      }
-    | null
-  > {
+  private async findActiveRefreshToken(token: string): Promise<{
+    id: string;
+    userId: string;
+    tokenHash: string;
+    expiresAt: Date;
+    revokedAt: Date | null;
+    user: { id: string; email: string; fullName: string | null; createdAt: Date };
+  } | null> {
     const hash = await this.hashForLookup(token);
     return this.prisma.refreshToken.findUnique({
       where: { tokenHash: hash },
       include: { user: true },
-    }) as Promise<ReturnType<AuthService['findActiveRefreshToken']> extends Promise<infer T> ? T : never>;
+    }) as Promise<
+      ReturnType<AuthService['findActiveRefreshToken']> extends Promise<infer T> ? T : never
+    >;
   }
 
   private async hashForLookup(token: string): Promise<string> {
@@ -2123,33 +2236,44 @@ export class AuthService {
     if (!m) throw new Error(`Invalid duration: ${input}`);
     const value = Number.parseInt(m[1] ?? '0', 10);
     const unit = m[2] ?? 's';
-    const multipliers: Record<string, number> = { s: 1_000, m: 60_000, h: 3_600_000, d: 86_400_000 };
+    const multipliers: Record<string, number> = {
+      s: 1_000,
+      m: 60_000,
+      h: 3_600_000,
+      d: 86_400_000,
+    };
     return value * (multipliers[unit] ?? 1_000);
   }
 }
 ```
 
 Note: the original test wrote `tokenHash: await bcrypt.hash(token, 4)` for the refresh fixture. That mismatches the lookup strategy in this implementation (sha256). **Update the relevant test fixtures in `auth.service.spec.ts` before running:** in the `refresh` and `logout` describe blocks, replace `const storedHash = await bcrypt.hash(presentedToken, 4)` with:
+
 ```ts
 import { createHash } from 'node:crypto';
 const storedHash = createHash('sha256').update(presentedToken).digest('hex');
 ```
+
 Apply this edit to both the `refresh` rotates-token test, the reuse-detection test, and the `logout` revokes-token test. Remove the now-unused `bcrypt` import in those blocks if it leaves no other usage.
 
 Also: change `passwordHash` storage in `register` — bcrypt for passwords (correct, keep) — refresh tokens use sha256 (the lookup-friendly hash). Update the spec assertion in the register test:
+
 ```ts
 expect((prisma.user.create as jest.Mock).mock.calls[0][0].data.passwordHash).not.toBe(
   'password123',
 );
 ```
+
 This already passes — leave it.
 
 - [ ] **Step 4: Run to verify pass**
 
 Run:
+
 ```bash
 pnpm exec nx test api --testPathPattern=auth.service
 ```
+
 Expected: all auth.service tests PASS.
 
 - [ ] **Step 5: Commit**
@@ -2162,6 +2286,7 @@ git commit -m "feat(api/auth): AuthService with register, login, refresh rotatio
 ### Task 4.3: JWT strategy, guard, and current-user decorator
 
 **Files:**
+
 - Create: `apps/api/src/modules/auth/strategies/jwt.strategy.ts`, `apps/api/src/common/guards/jwt-auth.guard.ts`, `apps/api/src/common/decorators/current-user.decorator.ts`
 
 - [ ] **Step 1: Write `jwt.strategy.ts`**
@@ -2244,6 +2369,7 @@ git commit -m "feat(api/auth): JWT strategy, guard, and @CurrentUser decorator"
 ### Task 4.4: `AuthController` (TDD) and `AuthModule`
 
 **Files:**
+
 - Create: `apps/api/src/modules/auth/{auth.controller.ts,auth.controller.spec.ts,auth.module.ts}`
 
 - [ ] **Step 1: Write failing `auth.controller.spec.ts`**
@@ -2303,10 +2429,7 @@ describe('AuthController', () => {
       refreshTokenExpiresAt: new Date(Date.now() + 60_000),
     });
     const res = makeResponse();
-    const result = await controller.register(
-      { email: 'a@b.com', password: 'password123' },
-      res,
-    );
+    const result = await controller.register({ email: 'a@b.com', password: 'password123' }, res);
     expect(result).toEqual({
       user: { id: 'u1', email: 'a@b.com', fullName: null, createdAt: '2026-05-14T00:00:00.000Z' },
       accessToken: 'jwt',
@@ -2327,23 +2450,17 @@ describe('AuthController', () => {
 - [ ] **Step 2: Run to verify failure**
 
 Run:
+
 ```bash
 pnpm exec nx test api --testPathPattern=auth.controller
 ```
+
 Expected: FAIL — "Cannot find module './auth.controller'".
 
 - [ ] **Step 3: Implement `auth.controller.ts`**
 
 ```ts
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
@@ -2409,9 +2526,10 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<void> {
     // Accept either a real express request or a plain cookie map (for tests).
-    const cookies: CookieMap = 'cookies' in (req as { cookies?: CookieMap })
-      ? (req as { cookies: CookieMap }).cookies
-      : (req as CookieMap);
+    const cookies: CookieMap =
+      'cookies' in (req as { cookies?: CookieMap })
+        ? (req as { cookies: CookieMap }).cookies
+        : (req as CookieMap);
     const presented = cookies?.[REFRESH_COOKIE_NAME] ?? '';
     if (presented) await this.auth.logout(presented);
     res.clearCookie(REFRESH_COOKIE_NAME, { path: '/api/auth' });
@@ -2465,9 +2583,11 @@ export class AuthModule {}
 - [ ] **Step 5: Run to verify pass**
 
 Run:
+
 ```bash
 pnpm exec nx test api --testPathPattern=auth.controller
 ```
+
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -2480,6 +2600,7 @@ git commit -m "feat(api/auth): AuthController + AuthModule (register/login/refre
 ### Task 4.5: `UsersController` (TDD), `UsersModule`, and wire AppModule
 
 **Files:**
+
 - Create: `apps/api/src/modules/users/{users.module.ts,users.controller.ts,users.controller.spec.ts,users.service.ts,users.service.spec.ts}`
 - Modify: `apps/api/src/app.module.ts`
 
@@ -2622,6 +2743,7 @@ export class UsersModule {}
 - [ ] **Step 6: Wire `app.module.ts`**
 
 Replace the body of `apps/api/src/app.module.ts`:
+
 ```ts
 import { Module } from '@nestjs/common';
 import { ConfigModule } from './config/config.module';
@@ -2640,14 +2762,17 @@ export class AppModule {}
 - [ ] **Step 7: Run all API tests**
 
 Run:
+
 ```bash
 pnpm exec nx test api
 ```
+
 Expected: every test PASSes.
 
 - [ ] **Step 8: Smoke test against a running server**
 
 Run:
+
 ```bash
 pnpm dev:api &
 sleep 5
@@ -2665,6 +2790,7 @@ curl -s -X POST http://localhost:3000/api/auth/refresh -b /tmp/cookies.txt -c /t
 curl -s -X POST http://localhost:3000/api/auth/logout -b /tmp/cookies.txt
 kill %1 2>/dev/null || true
 ```
+
 Expected: register returns `{user, accessToken}`; `/users/me` returns the user object; refresh returns a new `accessToken`; logout returns 204.
 
 - [ ] **Step 9: Commit**
@@ -2683,11 +2809,13 @@ Goal: a Vite + React app with router, TanStack Query, Tailwind theme, API client
 ### Task 5.1: Generate the React app
 
 **Files:**
+
 - Create via generator: `apps/web/**`, `apps/web-e2e/**`
 
 - [ ] **Step 1: Add the React plugin**
 
 Run:
+
 ```bash
 pnpm exec nx add @nx/react
 ```
@@ -2695,6 +2823,7 @@ pnpm exec nx add @nx/react
 - [ ] **Step 2: Generate the app**
 
 Run:
+
 ```bash
 pnpm exec nx g @nx/react:app apps/web \
   --name=web \
@@ -2707,15 +2836,18 @@ pnpm exec nx g @nx/react:app apps/web \
   --tags=scope:web \
   --no-interactive
 ```
+
 Expected: scaffolds `apps/web/` (Vite + React Router 6 + Jest) and `apps/web-e2e/` (Playwright).
 
 - [ ] **Step 3: Verify**
 
 Run:
+
 ```bash
 pnpm exec nx build web
 pnpm exec nx test web
 ```
+
 Expected: both exit 0.
 
 - [ ] **Step 4: Commit**
@@ -2728,12 +2860,14 @@ git commit -m "feat(web): scaffold Vite + React 18 app with Jest and Playwright"
 ### Task 5.2: Install runtime deps and wire Tailwind + globals
 
 **Files:**
+
 - Modify: `apps/web/tailwind.config.js`, `apps/web/postcss.config.js`, `apps/web/src/styles/globals.css`
 - Modify: `apps/web/index.html` (title)
 
 - [ ] **Step 1: Install runtime deps**
 
 Run:
+
 ```bash
 pnpm add -w react-router-dom @tanstack/react-query zustand react-hook-form @hookform/resolvers zod
 ```
@@ -2741,9 +2875,11 @@ pnpm add -w react-router-dom @tanstack/react-query zustand react-hook-form @hook
 - [ ] **Step 2: Initialize Tailwind in the web app**
 
 Run:
+
 ```bash
 pnpm exec nx g @nx/react:setup-tailwind --project=web --no-interactive
 ```
+
 Expected: creates `apps/web/tailwind.config.js` and `apps/web/postcss.config.js`, adds Tailwind directives.
 
 - [ ] **Step 3: Replace `apps/web/tailwind.config.js` to use the shared preset**
@@ -2770,9 +2906,11 @@ module.exports = {
 - [ ] **Step 4: Replace `apps/web/src/styles.css` (or `globals.css`) with an import + Tailwind directives**
 
 Find which CSS file the generator wired into `main.tsx` (usually `apps/web/src/styles.css`). Replace its contents with:
+
 ```css
 @import '@finance-hub/web-ui/src/styles/globals.css';
 ```
+
 If the generator created `apps/web/src/styles/globals.css` instead, do the same in that file and confirm `main.tsx` imports it.
 
 - [ ] **Step 5: Update the page title in `apps/web/index.html`**
@@ -2789,6 +2927,7 @@ git commit -m "feat(web): wire Tailwind to web-ui preset and import shared globa
 ### Task 5.3: Env validation, query client, and api-client
 
 **Files:**
+
 - Create: `apps/web/src/lib/{env.ts,query-client.ts,api-client.ts}`
 
 - [ ] **Step 1: Write `apps/web/src/lib/env.ts`**
@@ -2839,7 +2978,11 @@ export interface ApiClientOptions extends RequestInit {
 }
 
 export class ApiError extends Error {
-  constructor(public readonly status: number, public readonly body: unknown, message?: string) {
+  constructor(
+    public readonly status: number,
+    public readonly body: unknown,
+    message?: string,
+  ) {
     super(message ?? `Request failed with status ${status}`);
   }
 }
@@ -2905,6 +3048,7 @@ git commit -m "feat(web): env validation, TanStack QueryClient factory, fetch wr
 ### Task 5.4: Router shell
 
 **Files:**
+
 - Create: `apps/web/src/app/router.tsx`
 - Replace: `apps/web/src/app/app.tsx`, `apps/web/src/main.tsx`
 
@@ -2948,6 +3092,7 @@ export function AppRoutes(): JSX.Element {
 Create each of these as a minimal export. They'll be filled in during Phase 6.
 
 `apps/web/src/pages/login.page.tsx`:
+
 ```tsx
 export function LoginPage(): JSX.Element {
   return <div>Login (placeholder)</div>;
@@ -2955,6 +3100,7 @@ export function LoginPage(): JSX.Element {
 ```
 
 `apps/web/src/pages/register.page.tsx`:
+
 ```tsx
 export function RegisterPage(): JSX.Element {
   return <div>Register (placeholder)</div>;
@@ -2962,6 +3108,7 @@ export function RegisterPage(): JSX.Element {
 ```
 
 `apps/web/src/pages/dashboard.page.tsx`:
+
 ```tsx
 export function DashboardPage(): JSX.Element {
   return <div>Dashboard (placeholder)</div>;
@@ -2969,6 +3116,7 @@ export function DashboardPage(): JSX.Element {
 ```
 
 `apps/web/src/pages/not-found.page.tsx`:
+
 ```tsx
 export function NotFoundPage(): JSX.Element {
   return <div>Not found</div>;
@@ -2976,6 +3124,7 @@ export function NotFoundPage(): JSX.Element {
 ```
 
 `apps/web/src/features/auth/guards/protected-route.tsx`:
+
 ```tsx
 import type { ReactNode } from 'react';
 
@@ -3020,17 +3169,20 @@ createRoot(document.getElementById('root') as HTMLElement).render(
   </StrictMode>,
 );
 ```
+
 (If the generator placed the CSS at `./styles/globals.css`, adjust the import path.)
 
 - [ ] **Step 5: Verify the dev server boots**
 
 Run:
+
 ```bash
 pnpm dev:web &
 sleep 5
 curl -s -o /dev/null -w '%{http_code}\n' http://localhost:4200/login
 kill %1 2>/dev/null || true
 ```
+
 Expected: 200.
 
 - [ ] **Step 6: Commit**
@@ -3049,6 +3201,7 @@ Goal: replace the placeholders with the real auth feature — store, API hooks, 
 ### Task 6.1: Auth store (TDD)
 
 **Files:**
+
 - Create: `apps/web/src/features/auth/store/{auth.store.ts,auth.store.spec.ts}`
 
 - [ ] **Step 1: Write failing `auth.store.spec.ts`**
@@ -3121,9 +3274,11 @@ export const useAuthStore = create<AuthState>((set) => ({
 - [ ] **Step 3: Run to verify pass**
 
 Run:
+
 ```bash
 pnpm exec nx test web --testPathPattern=auth.store
 ```
+
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -3136,6 +3291,7 @@ git commit -m "feat(web/auth): zustand auth store with set/clear semantics"
 ### Task 6.2: Auth API wrapper
 
 **Files:**
+
 - Create: `apps/web/src/features/auth/api/auth.api.ts`
 
 - [ ] **Step 1: Write `auth.api.ts`**
@@ -3164,6 +3320,7 @@ export const authApi = {
 - [ ] **Step 2: Wire the api-client to the store in `apps/web/src/main.tsx`**
 
 Open `apps/web/src/main.tsx` and just below the imports add:
+
 ```tsx
 import { configureApiClient } from './lib/api-client';
 import { useAuthStore } from './features/auth/store/auth.store';
@@ -3195,6 +3352,7 @@ git commit -m "feat(web/auth): api wrapper + bind api-client to auth store"
 ### Task 6.3: Auth hooks
 
 **Files:**
+
 - Create: `apps/web/src/features/auth/hooks/{use-login.ts,use-register.ts,use-logout.ts,use-me.ts}`
 
 - [ ] **Step 1: `use-me.ts`**
@@ -3278,6 +3436,7 @@ git commit -m "feat(web/auth): TanStack Query hooks (login, register, logout, me
 ### Task 6.4: Auth UI components
 
 **Files:**
+
 - Create: `apps/web/src/features/auth/components/{auth-layout.tsx,login-form.tsx,register-form.tsx,current-user-card.tsx}`
 
 - [ ] **Step 1: `auth-layout.tsx`**
@@ -3409,9 +3568,7 @@ export function RegisterForm(): JSX.Element {
         />
       </div>
       {error && (
-        <p className="text-sm text-destructive">
-          Could not create account. Try a different email.
-        </p>
+        <p className="text-sm text-destructive">Could not create account. Try a different email.</p>
       )}
       <Button type="submit" disabled={isPending} className="w-full">
         {isPending ? 'Creating account...' : 'Create account'}
@@ -3443,7 +3600,9 @@ export function CurrentUserCard(): JSX.Element {
         <CardTitle>Signed in as</CardTitle>
       </CardHeader>
       <CardContent>
-        <p data-testid="current-user-email" className="text-base">{data.email}</p>
+        <p data-testid="current-user-email" className="text-base">
+          {data.email}
+        </p>
         {data.fullName && <p className="text-sm text-muted-foreground">{data.fullName}</p>}
       </CardContent>
     </Card>
@@ -3461,6 +3620,7 @@ git commit -m "feat(web/auth): AuthLayout + Login/Register forms + CurrentUserCa
 ### Task 6.5: Real `ProtectedRoute` and `features/auth/index.ts`
 
 **Files:**
+
 - Replace: `apps/web/src/features/auth/guards/protected-route.tsx`
 - Create: `apps/web/src/features/auth/index.ts`
 
@@ -3504,6 +3664,7 @@ git commit -m "feat(web/auth): real ProtectedRoute and feature barrel"
 ### Task 6.6: Wire pages
 
 **Files:**
+
 - Replace placeholder content of: `apps/web/src/pages/{login,register,dashboard,not-found}.page.tsx`
 
 - [ ] **Step 1: `login.page.tsx`**
@@ -3584,6 +3745,7 @@ export function NotFoundPage(): JSX.Element {
 - [ ] **Step 5: Verify the flow manually**
 
 Run (with the API also running, see Task 4.5 smoke):
+
 ```bash
 pnpm dev:api &
 sleep 5
@@ -3613,12 +3775,14 @@ Goal: cover the auth flow with Playwright, prove module-boundary enforcement, an
 ### Task 7.1: Playwright auth E2E
 
 **Files:**
+
 - Modify: `apps/web-e2e/playwright.config.ts`
 - Create: `apps/web-e2e/src/auth.spec.ts`
 
 - [ ] **Step 1: Update `apps/web-e2e/playwright.config.ts` to use `DATABASE_URL_TEST`**
 
 Open the file and ensure the `webServer` block (the API and web) sets `DATABASE_URL: process.env['DATABASE_URL_TEST']`. If the file only starts the web app, add a second `webServer` entry for the API:
+
 ```ts
 webServer: [
   {
@@ -3644,6 +3808,7 @@ webServer: [
 - [ ] **Step 2: Add a `globalSetup` that resets the test DB**
 
 Create `apps/web-e2e/global-setup.ts`:
+
 ```ts
 import { execSync } from 'node:child_process';
 
@@ -3656,6 +3821,7 @@ export default async function globalSetup(): Promise<void> {
 ```
 
 Reference it from `playwright.config.ts`:
+
 ```ts
 globalSetup: require.resolve('./global-setup'),
 ```
@@ -3700,9 +3866,11 @@ test('register → dashboard → logout → re-redirect to /login', async ({ pag
 Ensure the API can resolve `DATABASE_URL_TEST` (set it in `.env` if not already) and Postgres has the empty `finance_hub_test` database.
 
 Run:
+
 ```bash
 pnpm test:e2e
 ```
+
 Expected: the auth spec passes.
 
 - [ ] **Step 5: Commit**
@@ -3719,6 +3887,7 @@ This is an Acceptance Criterion #11 check, not a permanent change.
 - [ ] **Step 1: Introduce a deliberate violation**
 
 Open `libs/shared-utils/src/money.ts` and add at the top:
+
 ```ts
 // @ts-expect-error intentional cross-tier import for ESLint boundary test
 import { ProtectedRoute } from '../../../apps/web/src/features/auth/guards/protected-route';
@@ -3727,22 +3896,27 @@ import { ProtectedRoute } from '../../../apps/web/src/features/auth/guards/prote
 - [ ] **Step 2: Run lint and confirm it fails**
 
 Run:
+
 ```bash
 pnpm exec nx lint shared-utils
 ```
+
 Expected: ESLint reports a `@nx/enforce-module-boundaries` violation.
 
 - [ ] **Step 3: Revert the change**
 
 Run:
+
 ```bash
 git checkout -- libs/shared-utils/src/money.ts
 ```
 
 Re-run lint:
+
 ```bash
 pnpm exec nx lint shared-utils
 ```
+
 Expected: exits 0.
 
 - [ ] **Step 4: Record the verification in the commit log (no code change)**
@@ -3752,11 +3926,12 @@ No new commit is needed because we reverted. The criterion is satisfied — the 
 ### Task 7.3: Write the root `README.md`
 
 **Files:**
+
 - Create: `README.md`
 
 - [ ] **Step 1: Write the README**
 
-```markdown
+````markdown
 # Finance Hub
 
 Personal finance and asset-management dashboard. Nx monorepo with a NestJS API and a React (Vite) web app.
@@ -3778,24 +3953,25 @@ cp .env.example .env
 pnpm db:migrate
 pnpm dev
 ```
+````
 
 The API serves at `http://localhost:3000/api`, the web app at `http://localhost:4200`, and Swagger UI at `http://localhost:3000/api/docs`.
 
 ## Scripts
 
-| Script | Behavior |
-|---|---|
-| `pnpm dev` | Run both apps in parallel |
-| `pnpm dev:api` / `pnpm dev:web` | Run a single app |
-| `pnpm build` | Build all projects |
-| `pnpm test` | Run all unit tests |
-| `pnpm test:e2e` | Run Playwright E2E tests |
-| `pnpm lint` | Lint everything |
-| `pnpm typecheck` | TypeScript across the monorepo |
-| `pnpm db:migrate` | `prisma migrate dev` |
-| `pnpm db:reset` | `prisma migrate reset` |
-| `pnpm db:studio` | Open Prisma Studio |
-| `pnpm db:generate` | Regenerate the Prisma client |
+| Script                          | Behavior                       |
+| ------------------------------- | ------------------------------ |
+| `pnpm dev`                      | Run both apps in parallel      |
+| `pnpm dev:api` / `pnpm dev:web` | Run a single app               |
+| `pnpm build`                    | Build all projects             |
+| `pnpm test`                     | Run all unit tests             |
+| `pnpm test:e2e`                 | Run Playwright E2E tests       |
+| `pnpm lint`                     | Lint everything                |
+| `pnpm typecheck`                | TypeScript across the monorepo |
+| `pnpm db:migrate`               | `prisma migrate dev`           |
+| `pnpm db:reset`                 | `prisma migrate reset`         |
+| `pnpm db:studio`                | Open Prisma Studio             |
+| `pnpm db:generate`              | Regenerate the Prisma client   |
 
 ## Layout
 
@@ -3806,14 +3982,15 @@ The API serves at `http://localhost:3000/api`, the web app at `http://localhost:
 - `libs/web-ui` — Tailwind preset + shadcn primitives.
 - `prisma/` — Prisma schema and migrations.
 - `docs/superpowers/` — Specs and implementation plans.
-```
+
+````
 
 - [ ] **Step 2: Commit**
 
 ```bash
 git add README.md
 git commit -m "docs: add root README with prereqs, scripts, and layout overview"
-```
+````
 
 ### Task 7.4: Acceptance-criteria sweep
 
@@ -3825,6 +4002,7 @@ Walk through each criterion from §10 of the spec and confirm.
 rm -rf node_modules
 pnpm install
 ```
+
 Expected: completes with no missing-peer-dep warnings.
 
 - [ ] **AC 2: `pnpm db:migrate` creates tables**
@@ -3834,6 +4012,7 @@ pnpm db:reset --force
 pnpm db:migrate
 psql "$DATABASE_URL" -c "\dt"
 ```
+
 Expected: `User`, `RefreshToken`, `_prisma_migrations` listed.
 
 - [ ] **AC 3: `pnpm dev` starts both apps**
@@ -3845,6 +4024,7 @@ curl -s -o /dev/null -w '%{http_code}\n' http://localhost:3000/api/health
 curl -s -o /dev/null -w '%{http_code}\n' http://localhost:4200
 kill %1 2>/dev/null || true
 ```
+
 Expected: both 200.
 
 - [ ] **AC 4: `/api/health` returns the right body**
@@ -3868,6 +4048,7 @@ Same incognito session: click "Create one", register, see dashboard with email, 
 ```bash
 pnpm test
 ```
+
 Expected: all unit tests pass.
 
 - [ ] **AC 9: `pnpm test:e2e` passes**
@@ -3875,6 +4056,7 @@ Expected: all unit tests pass.
 ```bash
 pnpm test:e2e
 ```
+
 Expected: green.
 
 - [ ] **AC 10: `pnpm lint` and `pnpm typecheck` pass**
@@ -3883,6 +4065,7 @@ Expected: green.
 pnpm lint
 pnpm typecheck
 ```
+
 Expected: both exit 0.
 
 - [ ] **AC 11: Module boundaries enforced**
@@ -3892,11 +4075,13 @@ Already confirmed in Task 7.2.
 - [ ] **Step Z: Final commit**
 
 If anything was tweaked during the sweep (typically tiny fixes), batch them into a single commit:
+
 ```bash
 git status
 git add -A
 git commit -m "chore: address acceptance-criteria sweep findings"
 ```
+
 If nothing changed, skip.
 
 ---
@@ -3906,6 +4091,7 @@ If nothing changed, skip.
 Reviewed against the spec:
 
 **Spec coverage:**
+
 - §1 In scope → Phases 1–7 cover everything (Nx, Prisma, JWT auth, shared types, Swagger, Jest+Playwright, ESLint+Prettier+husky).
 - §2 Architectural choices → Phase 1 (Nx, pnpm, Node), Phase 3 (NestJS, Prisma), Phase 5 (Vite/React/router/Query/zustand), Phase 2/5 (Tailwind/shadcn).
 - §3 Layout → Phase 1 + every generator task.
