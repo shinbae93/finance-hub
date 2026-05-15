@@ -13,7 +13,8 @@ model User {
   fullName      String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  refreshTokens RefreshToken[]
+  refreshTokens     RefreshToken[]
+  stockTransactions StockTransaction[]
 }
 
 model RefreshToken {
@@ -28,4 +29,30 @@ model RefreshToken {
   ipAddress String?
 
   @@index([userId])
+}
+
+enum TransactionType {
+  MUA
+  BAN
+}
+
+model StockTransaction {
+  id             String          @id @default(uuid())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tradeDate      DateTime        @db.Date
+  settlementDate DateTime        @db.Date
+  ticker         String
+  type           TransactionType
+  volume         Int
+  price          Decimal         @db.Decimal(15, 2)
+  feeRate        Decimal         @db.Decimal(5, 4)
+  fee            Decimal         @db.Decimal(15, 2)
+  tax            Decimal         @db.Decimal(15, 2)
+  totalAmount    Decimal         @db.Decimal(15, 2)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([userId, ticker])
+  @@index([userId, tradeDate])
 }
