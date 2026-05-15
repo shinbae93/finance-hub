@@ -1,5 +1,5 @@
 import { Button } from '@finance-hub/web-ui';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { CurrentUserCard, useLogout } from '../features/auth';
 
 export function DashboardPage(): JSX.Element {
@@ -20,6 +20,14 @@ export function DashboardPage(): JSX.Element {
         </Button>
       </header>
       <CurrentUserCard />
+      <nav className="flex gap-3">
+        <Link
+          to="/stocks"
+          className="rounded border border-border px-4 py-2 text-sm hover:bg-muted transition-colors"
+        >
+          Stocks →
+        </Link>
+      </nav>
     </div>
   );
 }

@@ -52,10 +52,7 @@ export function TransactionForm({ onSubmit, isPending, onCancel }: Props): JSX.E
   }
 
   return (
-    <form
-      onSubmit={handleSubmit((d) => onSubmit(d as CreateStockTransactionRequest))}
-      className="space-y-4"
-    >
+    <form onSubmit={handleSubmit((d) => onSubmit(d))} className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-xs text-muted-foreground mb-1">Trade Date</label>

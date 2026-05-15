@@ -1,11 +1,8 @@
 import type { SummaryDto } from '@finance-hub/shared-api-types';
+import { formatNum } from '../utils/format';
 
 interface Props {
   data: SummaryDto;
-}
-
-function formatNum(n: number): string {
-  return Math.round(n).toLocaleString('vi-VN');
 }
 
 function StatCard({

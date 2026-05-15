@@ -1,17 +1,6 @@
 import { useState } from 'react';
 import type { WinLossDto } from '@finance-hub/shared-api-types';
-
-interface Props {
-  data: WinLossDto;
-}
-
-function formatNum(n: number): string {
-  return n.toLocaleString('vi-VN');
-}
-
-function formatPnl(n: number): string {
-  return (n >= 0 ? '+' : '') + formatNum(Math.round(n));
-}
+import { formatNum, formatPnl } from '../utils/format';
 
 export function WinLossList({ data }: Props): JSX.Element {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
@@ -74,7 +63,7 @@ export function WinLossList({ data }: Props): JSX.Element {
                     </span>
                     <span className="text-right">{formatNum(sell.volume)}</span>
                     <span className="text-right">{formatNum(sell.sellPrice)}</span>
-                    <span className="text-right">{formatNum(Math.round(sell.avgCost))}</span>
+                    <span className="text-right">{formatNum(sell.avgCost)}</span>
                     <span
                       className={`text-right font-medium ${sell.pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}
                     >

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { StockTransactionDto } from '@finance-hub/shared-api-types';
 import { useDeleteTransaction } from '../hooks/use-transactions';
+import { formatNum as formatNumber } from '../utils/format';
 
 interface Props {
   transactions: StockTransactionDto[];
@@ -8,10 +9,6 @@ interface Props {
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('vi-VN');
-}
-
-function formatNumber(n: number): string {
-  return n.toLocaleString('vi-VN');
 }
 
 export function TransactionTable({ transactions }: Props): JSX.Element {
