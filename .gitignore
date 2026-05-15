@@ -1,4 +1,3 @@
-
 !.vscode/extensions.json
 !.vscode/launch.json
 !.vscode/settings.json
@@ -43,3 +42,6 @@ out-tsc
 testem.log
 tmp
 yarn-error.log
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
