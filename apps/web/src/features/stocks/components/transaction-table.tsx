@@ -20,7 +20,12 @@ export function TransactionTable({ transactions }: Props): JSX.Element {
 
   function handleDelete(id: string) {
     if (confirmId === id) {
-      deleteTransaction(id);
+      deleteTransaction(id, {
+        onError: () => {
+          setConfirmId(null);
+          alert('Failed to delete transaction. Please try again.');
+        },
+      });
       setConfirmId(null);
     } else {
       setConfirmId(id);

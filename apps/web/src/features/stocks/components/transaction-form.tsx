@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type { CreateStockTransactionRequest } from '@finance-hub/shared-api-types';
 
@@ -7,25 +8,17 @@ const schema = z.object({
   settlementDate: z.string().min(1, 'Required'),
   ticker: z
     .string()
-    .min(2)
+    .min(2, 'Min 2 characters')
     .max(10)
     .transform((v) => v.toUpperCase()),
   type: z.enum(['MUA', 'BAN']),
-  volume: z.coerce.number().int().min(1),
-  price: z.coerce.number().min(0),
+  volume: z.coerce.number().int().min(1, 'Must be at least 1'),
+  price: z.coerce.number().min(0, 'Must be non-negative'),
   feeRate: z.coerce.number().min(0).max(1),
 });
 
-// Raw form shape — inputs are strings from HTML inputs
-interface FormValues {
-  tradeDate: string;
-  settlementDate: string;
-  ticker: string;
-  type: 'MUA' | 'BAN';
-  volume: number;
-  price: number;
-  feeRate: number;
-}
+type FormValues = z.input<typeof schema>;
+type ParsedValues = z.output<typeof schema>;
 
 interface Props {
   onSubmit: (data: CreateStockTransactionRequest) => void;
@@ -39,7 +32,8 @@ export function TransactionForm({ onSubmit, isPending, onCancel }: Props): JSX.E
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<FormValues, unknown, ParsedValues>({
+    resolver: zodResolver(schema),
     defaultValues: { feeRate: 0.0015, type: 'MUA' },
   });
 
@@ -59,11 +53,7 @@ export function TransactionForm({ onSubmit, isPending, onCancel }: Props): JSX.E
 
   return (
     <form
-      onSubmit={handleSubmit((d) => {
-        const parsed = schema.safeParse(d);
-        if (!parsed.success) return;
-        onSubmit(parsed.data as CreateStockTransactionRequest);
-      })}
+      onSubmit={handleSubmit((d) => onSubmit(d as CreateStockTransactionRequest))}
       className="space-y-4"
     >
       <div className="grid grid-cols-2 gap-3">
