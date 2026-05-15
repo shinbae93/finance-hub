@@ -2,9 +2,19 @@ import { FlatCompat } from '@eslint/eslintrc';
 import nxEslintPlugin from '@nx/eslint-plugin';
 import js from '@eslint/js';
 
+// Filter out rules not supported by eslint v8 (e.g. no-unassigned-vars from @eslint/js v10)
+const safeRecommended = {
+  ...js.configs.recommended,
+  rules: Object.fromEntries(
+    Object.entries(js.configs.recommended.rules ?? {}).filter(
+      ([key]) => !['no-unassigned-vars', 'no-useless-assignment', 'preserve-caught-error'].includes(key),
+    ),
+  ),
+};
+
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
-  recommendedConfig: js.configs.recommended,
+  recommendedConfig: safeRecommended,
 });
 
 export default [
