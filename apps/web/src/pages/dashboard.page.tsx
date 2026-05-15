@@ -1,3 +1,25 @@
+import { Button } from '@finance-hub/web-ui';
+import { useNavigate } from 'react-router-dom';
+import { CurrentUserCard, useLogout } from '../features/auth';
+
 export function DashboardPage(): JSX.Element {
-  return <div>Dashboard (placeholder)</div>;
+  const navigate = useNavigate();
+  const { mutate: logout, isPending } = useLogout();
+
+  return (
+    <div className="container mx-auto max-w-3xl space-y-6 py-12 px-4">
+      <header className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <Button
+          variant="outline"
+          disabled={isPending}
+          onClick={() => logout(undefined, { onSettled: () => navigate('/login') })}
+          data-testid="logout-button"
+        >
+          {isPending ? 'Signing out…' : 'Sign out'}
+        </Button>
+      </header>
+      <CurrentUserCard />
+    </div>
+  );
 }

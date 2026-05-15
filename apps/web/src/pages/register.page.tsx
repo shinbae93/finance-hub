@@ -1,3 +1,9 @@
+import { AuthLayout, RegisterForm } from '../features/auth';
+
 export function RegisterPage(): JSX.Element {
-  return <div>Register (placeholder)</div>;
+  return (
+    <AuthLayout title="Create account">
+      <RegisterForm />
+    </AuthLayout>
+  );
 }
