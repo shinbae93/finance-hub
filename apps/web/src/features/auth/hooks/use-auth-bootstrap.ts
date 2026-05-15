@@ -4,13 +4,14 @@ import { useAuthStore } from '../store/auth.store';
 
 export function useAuthBootstrap(): boolean {
   const [ready, setReady] = useState(false);
+  // useRef guards against StrictMode double-invoke firing two /auth/refresh POSTs in dev.
   const attempted = useRef(false);
 
   useEffect(() => {
     if (attempted.current) return;
     attempted.current = true;
 
-    // If we already have a token in memory (e.g. same-session navigation), skip.
+    // Already have a token in memory (same-session navigation) — skip network round-trips.
     if (useAuthStore.getState().accessToken) {
       setReady(true);
       return;
@@ -18,8 +19,11 @@ export function useAuthBootstrap(): boolean {
 
     authApi
       .refresh()
-      .then(({ accessToken }) => {
+      .then(async ({ accessToken }) => {
         useAuthStore.getState().setAccessToken(accessToken);
+        // Hydrate user so components reading store.user don't see null after hard-refresh.
+        const user = await authApi.me();
+        useAuthStore.getState().setSession(accessToken, user);
       })
       .catch(() => {
         // No valid refresh cookie — start unauthenticated.
