@@ -63,7 +63,7 @@ describe('AuthController', () => {
   it('logout clears the cookie', async () => {
     auth.logout.mockResolvedValue(undefined);
     const res = makeResponse();
-    await controller.logout({ [REFRESH_COOKIE_NAME]: 'rt' }, res);
+    await controller.logout({ cookies: { [REFRESH_COOKIE_NAME]: 'rt' } }, res);
     expect(res._cookies[REFRESH_COOKIE_NAME]).toBeUndefined();
     expect(auth.logout).toHaveBeenCalledWith('rt');
   });

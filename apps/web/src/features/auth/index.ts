@@ -1,4 +1,5 @@
 export { useAuthStore } from './store/auth.store';
+export { useAuthBootstrap } from './hooks/use-auth-bootstrap';
 export { useLogin } from './hooks/use-login';
 export { useRegister } from './hooks/use-register';
 export { useLogout } from './hooks/use-logout';

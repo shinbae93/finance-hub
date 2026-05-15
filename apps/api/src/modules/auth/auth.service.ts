@@ -54,6 +54,7 @@ export class AuthService {
     if (!row) throw new UnauthorizedException('Invalid refresh token');
 
     if (row.revokedAt) {
+      // Reuse detection: revoke all active tokens for this user (token theft response).
       await this.prisma.refreshToken.updateMany({
         where: { userId: row.userId, revokedAt: null },
         data: { revokedAt: new Date() },
@@ -65,19 +66,26 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token expired');
     }
 
-    await this.prisma.refreshToken.update({
-      where: { id: row.id },
-      data: { revokedAt: new Date() },
-    });
-
     const newToken = this.generateRefreshToken();
     const newTokenHash = this.hashToken(newToken);
     const ttlMs = this.parseDurationMs(this.config.get('REFRESH_TOKEN_TTL', { infer: true }));
     const expiresAt = new Date(Date.now() + ttlMs);
 
-    await this.prisma.refreshToken.create({
-      data: { userId: row.userId, tokenHash: newTokenHash, expiresAt },
+    // Atomic: only revoke if still active (revokedAt IS NULL). If count === 0 a concurrent
+    // request already consumed this token — treat as reuse and abort.
+    const { count } = await this.prisma.$transaction(async (tx) => {
+      const revoked = await tx.refreshToken.updateMany({
+        where: { id: row.id, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      if (revoked.count === 0) return { count: 0 };
+      await tx.refreshToken.create({
+        data: { userId: row.userId, tokenHash: newTokenHash, expiresAt },
+      });
+      return { count: 1 };
     });
+
+    if (count === 0) throw new UnauthorizedException('Invalid refresh token');
 
     const accessToken = await this.signAccessToken({ sub: row.userId, email: row.user.email });
     return { accessToken, refreshToken: newToken, refreshTokenExpiresAt: expiresAt };

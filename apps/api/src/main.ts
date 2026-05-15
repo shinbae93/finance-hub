@@ -33,4 +33,8 @@ async function bootstrap(): Promise<void> {
   console.log(`API listening on http://localhost:${port}/api`);
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  // eslint-disable-next-line no-console
+  console.error('Failed to start application', err);
+  process.exit(1);
+});

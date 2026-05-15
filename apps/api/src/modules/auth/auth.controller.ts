@@ -60,27 +60,36 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Revoke the current refresh token' })
   async logout(
-    @Req() req: { cookies: CookieMap } | CookieMap,
+    @Req() req: { cookies: CookieMap },
     @Res({ passthrough: true }) res: Response,
   ): Promise<void> {
-    const cookies: CookieMap =
-      'cookies' in (req as { cookies?: CookieMap })
-        ? (req as { cookies: CookieMap }).cookies
-        : (req as CookieMap);
-    const presented = cookies?.[REFRESH_COOKIE_NAME] ?? '';
+    const presented = req.cookies?.[REFRESH_COOKIE_NAME] ?? '';
     if (presented) await this.auth.logout(presented);
-    res.clearCookie(REFRESH_COOKIE_NAME, { path: '/api/auth' });
+    this.clearRefreshCookie(res);
   }
 
-  private setRefreshCookie(res: Response, value: string, expiresAt: Date): void {
+  private cookieBaseOptions(): {
+    httpOnly: true;
+    secure: boolean;
+    sameSite: 'lax';
+    path: string;
+    domain: string | undefined;
+  } {
     const isProd = this.config.get('NODE_ENV', { infer: true }) === 'production';
-    res.cookie(REFRESH_COOKIE_NAME, value, {
+    return {
       httpOnly: true,
       secure: isProd,
       sameSite: 'lax',
       path: '/api/auth',
-      expires: expiresAt,
       domain: this.config.get('COOKIE_DOMAIN', { infer: true }) || undefined,
-    });
+    };
+  }
+
+  private setRefreshCookie(res: Response, value: string, expiresAt: Date): void {
+    res.cookie(REFRESH_COOKIE_NAME, value, { ...this.cookieBaseOptions(), expires: expiresAt });
+  }
+
+  private clearRefreshCookie(res: Response): void {
+    res.clearCookie(REFRESH_COOKIE_NAME, this.cookieBaseOptions());
   }
 }

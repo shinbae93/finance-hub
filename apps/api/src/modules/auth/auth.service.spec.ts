@@ -27,19 +27,25 @@ function makeService(deps?: {
   }>;
   configValues?: Record<string, unknown>;
 }): { service: AuthService; prisma: PrismaService; jwt: JwtService } {
+  const refreshTokenMethods = {
+    create: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    updateMany: jest.fn(),
+    ...deps?.refreshToken,
+  };
+
   const prisma = {
     user: {
       findUnique: jest.fn(),
       create: jest.fn(),
       ...deps?.user,
     },
-    refreshToken: {
-      create: jest.fn(),
-      findUnique: jest.fn(),
-      update: jest.fn(),
-      updateMany: jest.fn(),
-      ...deps?.refreshToken,
-    },
+    refreshToken: refreshTokenMethods,
+    // Execute transaction callback with a tx proxy that delegates to the same mocks.
+    $transaction: jest.fn((cb: (tx: unknown) => Promise<unknown>) =>
+      cb({ refreshToken: refreshTokenMethods }),
+    ),
   } as unknown as PrismaService;
 
   const jwt = {
@@ -177,7 +183,7 @@ describe('AuthService.refresh', () => {
             createdAt: new Date(),
           },
         }),
-        update: jest.fn().mockResolvedValue({}),
+        updateMany: jest.fn().mockResolvedValue({ count: 1 }),
         create: jest.fn().mockResolvedValue({}),
       },
     });

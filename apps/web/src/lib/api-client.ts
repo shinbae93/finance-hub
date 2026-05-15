@@ -22,6 +22,9 @@ let getAccessToken: GetAccessToken = () => null;
 let refreshAccessToken: RefreshAccessToken = async () => null;
 let onAuthFailure: OnAuthFailure = () => undefined;
 
+// Single in-flight refresh promise — concurrent 401s share one /auth/refresh call.
+let refreshPromise: Promise<string | null> | null = null;
+
 export function configureApiClient(handlers: {
   getAccessToken: GetAccessToken;
   refreshAccessToken: RefreshAccessToken;
@@ -30,6 +33,15 @@ export function configureApiClient(handlers: {
   getAccessToken = handlers.getAccessToken;
   refreshAccessToken = handlers.refreshAccessToken;
   onAuthFailure = handlers.onAuthFailure;
+}
+
+async function refreshOnce(): Promise<string | null> {
+  if (!refreshPromise) {
+    refreshPromise = refreshAccessToken().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
 }
 
 async function execute(path: string, init: ApiClientOptions, retried = false): Promise<Response> {
@@ -46,7 +58,7 @@ async function execute(path: string, init: ApiClientOptions, retried = false): P
   });
 
   if (response.status === 401 && !retried && path !== '/auth/refresh' && path !== '/auth/login') {
-    const newToken = await refreshAccessToken();
+    const newToken = await refreshOnce();
     if (newToken) return execute(path, init, true);
     onAuthFailure();
   }
