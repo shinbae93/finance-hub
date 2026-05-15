@@ -37,9 +37,9 @@ export function TransactionForm({ onSubmit, isPending, onCancel }: Props): JSX.E
     defaultValues: { feeRate: 0.0015, type: 'MUA' },
   });
 
-  const volume = watch('volume') ?? 0;
-  const price = watch('price') ?? 0;
-  const feeRate = watch('feeRate') ?? 0.0015;
+  const volume = Number(watch('volume') ?? 0);
+  const price = Number(watch('price') ?? 0);
+  const feeRate = Number(watch('feeRate') ?? 0.0015);
   const type = watch('type');
 
   const fee = Math.round(volume * price * feeRate);

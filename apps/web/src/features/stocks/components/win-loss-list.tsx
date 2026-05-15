@@ -2,6 +2,10 @@ import { useState } from 'react';
 import type { WinLossDto } from '@finance-hub/shared-api-types';
 import { formatNum, formatPnl } from '../utils/format';
 
+interface Props {
+  data: WinLossDto;
+}
+
 export function WinLossList({ data }: Props): JSX.Element {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
