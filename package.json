@@ -3,6 +3,18 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "dev": "nx run-many -t serve -p api,web --parallel=2",
+    "dev:api": "nx serve api",
+    "dev:web": "nx serve web",
+    "build": "nx run-many -t build",
+    "test": "nx run-many -t test",
+    "test:e2e": "nx run-many -t e2e",
+    "lint": "nx run-many -t lint",
+    "typecheck": "nx run-many -t typecheck",
+    "db:migrate": "prisma migrate dev",
+    "db:reset": "prisma migrate reset",
+    "db:studio": "prisma studio",
+    "db:generate": "prisma generate",
     "prepare": "husky"
   },
   "private": true,
