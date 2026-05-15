@@ -1,10 +1,45 @@
-node_modules/
-.env
-.env.local
-.env.*.local
-.DS_Store
-dist/
-build/
-.nx/
-coverage/
+
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/tasks.json
+# IDE - VSCode
+# IDEs and editors
+# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# System Files
+# compiled output
+# dependencies
+# misc
+*.launch
 *.log
+*.sublime-workspace
+.DS_Store
+.c9/
+.classpath
+.env
+.env.*.local
+.env.local
+.nx/
+.nx/cache
+.nx/workspace-data
+.project
+.settings/
+.vscode/*
+/.idea
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+/typings
+Thumbs.db
+build/
+coverage/
+dist
+dist/
+node_modules
+node_modules/
+npm-debug.log
+out-tsc
+testem.log
+tmp
+yarn-error.log
