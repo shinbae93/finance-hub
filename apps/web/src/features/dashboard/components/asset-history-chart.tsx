@@ -1,13 +1,5 @@
 import { useState } from 'react';
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  type TooltipProps,
-} from 'recharts';
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 
 type Range = '1M' | '6M' | '1Y';
 
@@ -40,7 +32,8 @@ const DATA: Record<Range, { month: string; value: number }[]> = {
 
 const RANGES: Range[] = ['1M', '6M', '1Y'];
 
-function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) {
+function ChartTooltip(props: any) {
+  const { active, payload, label } = props;
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-md border border-[#2b3139] bg-[#2b3139] px-3 py-2 text-xs">
