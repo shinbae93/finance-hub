@@ -48,7 +48,7 @@ export function AddGoldTransactionModal({
 
   if (!open) return null;
 
-  function onSubmit(_data: FormValues) {
+  function onSubmit() {
     // No API yet — just close and reset
     reset();
     onClose();
@@ -68,6 +68,7 @@ export function AddGoldTransactionModal({
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close"
             className="text-muted-foreground hover:text-foreground"
           >
             <X size={18} />

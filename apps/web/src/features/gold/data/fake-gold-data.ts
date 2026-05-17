@@ -27,6 +27,9 @@ export interface GoldChartPoint {
   value: number;
 }
 
+// Mock current gold price per gram (₫)
+export const MOCK_PRICE_PER_GRAM = 9_500_000;
+
 export const GOLD_TRANSACTIONS: GoldTransaction[] = [
   {
     id: '1',
