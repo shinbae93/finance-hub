@@ -11,5 +11,4 @@ export { useSummary } from './hooks/use-summary';
 export { TransactionTable } from './components/transaction-table';
 export { AddTransactionModal } from './components/add-transaction-modal';
 export { WinLossList } from './components/win-loss-list';
-export { HoldingsTable } from './components/holdings-table';
-export { SummaryCards } from './components/summary-cards';
+export { SummaryTab } from './components/summary-tab';
