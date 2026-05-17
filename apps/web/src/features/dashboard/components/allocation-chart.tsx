@@ -9,8 +9,10 @@ const ALLOCATION_DATA = [
 
 export function AllocationChart(): JSX.Element {
   return (
-    <div className="w-[220px] flex-shrink-0 rounded-xl border border-[#2b3139] bg-[#1e2329] p-5">
-      <p className="mb-3 text-xs font-medium uppercase tracking-wider text-[#929aa5]">Allocation</p>
+    <div className="w-[220px] flex-shrink-0 rounded-xl border border-border bg-card p-5">
+      <p className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        Allocation
+      </p>
       <div className="flex items-center gap-4">
         <PieChart width={80} height={80}>
           <Pie
@@ -35,7 +37,7 @@ export function AllocationChart(): JSX.Element {
                 className="inline-block h-2 w-2 flex-shrink-0 rounded-sm"
                 style={{ background: entry.color }}
               />
-              <span className="text-[#eaecef]">{entry.name}</span>
+              <span className="text-foreground">{entry.name}</span>
               <span className="ml-1 font-number font-semibold" style={{ color: entry.color }}>
                 {entry.value}%
               </span>

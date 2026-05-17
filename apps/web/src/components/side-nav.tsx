@@ -28,7 +28,6 @@ export function SideNav(): JSX.Element {
     localStorage.setItem('sidebar-collapsed', String(next));
   }
 
-  // Close profile popover when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
@@ -44,12 +43,12 @@ export function SideNav(): JSX.Element {
 
   return (
     <aside
-      className={`sticky top-0 flex flex-shrink-0 self-stretch flex-col border-r border-[#2b3139] bg-[#1e2329] transition-all duration-200 ${
+      className={`sticky top-0 flex flex-shrink-0 self-stretch flex-col border-r border-border bg-card transition-all duration-200 ${
         collapsed ? 'w-[72px]' : 'w-[220px]'
       }`}
     >
       {/* Header: wordmark + collapse toggle */}
-      <div className="flex h-16 items-center justify-between border-b border-[#2b3139] px-4">
+      <div className="flex h-16 items-center justify-between border-b border-border px-4">
         {collapsed ? (
           <span className="text-sm font-bold text-[#fcd535]">FH</span>
         ) : (
@@ -60,7 +59,7 @@ export function SideNav(): JSX.Element {
         <button
           onClick={toggleCollapse}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-[#707a8a] transition-colors hover:bg-[#2b3139] hover:text-[#eaecef]"
+          className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <PanelLeft size={16} />
         </button>
@@ -79,7 +78,7 @@ export function SideNav(): JSX.Element {
               } ${
                 active
                   ? 'bg-[#fcd535] font-semibold text-[#181a20]'
-                  : 'text-[#707a8a] hover:bg-[#2b3139] hover:text-[#eaecef]'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
             >
               <Icon size={16} className="flex-shrink-0" />
@@ -94,27 +93,26 @@ export function SideNav(): JSX.Element {
       </nav>
 
       {/* Bottom: user profile button + popover */}
-      <div className="border-t border-[#2b3139] p-2" ref={profileRef}>
+      <div className="border-t border-border p-2" ref={profileRef}>
         {/* Profile trigger button */}
         <button
           onClick={() => setProfileOpen((o) => !o)}
-          className={`flex w-full items-center rounded-md px-2 py-2 transition-colors hover:bg-[#2b3139] ${
+          className={`flex w-full items-center rounded-md px-2 py-2 transition-colors hover:bg-muted ${
             collapsed ? 'justify-center' : 'gap-2'
           }`}
         >
-          {/* Avatar */}
           <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#fcd535] text-xs font-bold text-[#181a20]">
             {avatarInitial}
           </div>
           {!collapsed && (
             <>
               <div className="min-w-0 flex-1 text-left">
-                <p className="truncate text-xs font-semibold text-[#eaecef]">{displayName}</p>
-                <p className="truncate text-[10px] text-[#707a8a]">{user?.email}</p>
+                <p className="truncate text-xs font-semibold text-foreground">{displayName}</p>
+                <p className="truncate text-[10px] text-muted-foreground">{user?.email}</p>
               </div>
               <ChevronUp
                 size={14}
-                className={`flex-shrink-0 text-[#707a8a] transition-transform ${profileOpen ? 'rotate-180' : ''}`}
+                className={`flex-shrink-0 text-muted-foreground transition-transform ${profileOpen ? 'rotate-180' : ''}`}
               />
             </>
           )}
@@ -122,15 +120,15 @@ export function SideNav(): JSX.Element {
 
         {/* Profile popover */}
         {profileOpen && (
-          <div className="absolute bottom-[60px] left-2 right-2 z-50 overflow-hidden rounded-lg border border-[#2b3139] bg-[#2b3139] shadow-lg">
+          <div className="absolute bottom-[60px] left-2 right-2 z-50 overflow-hidden rounded-lg border border-border bg-card shadow-lg">
             {/* User identity */}
-            <div className="flex items-center gap-3 border-b border-[#3a4149] px-3 py-3">
+            <div className="flex items-center gap-3 border-b border-border px-3 py-3">
               <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#fcd535] text-sm font-bold text-[#181a20]">
                 {avatarInitial}
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[#eaecef]">{displayName}</p>
-                <p className="truncate text-xs text-[#707a8a]">{user?.email}</p>
+                <p className="truncate text-sm font-semibold text-foreground">{displayName}</p>
+                <p className="truncate text-xs text-muted-foreground">{user?.email}</p>
               </div>
             </div>
 
@@ -140,12 +138,12 @@ export function SideNav(): JSX.Element {
                 toggleTheme();
                 setProfileOpen(false);
               }}
-              className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-[#eaecef] transition-colors hover:bg-[#353d47]"
+              className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
             >
               {theme === 'dark' ? (
-                <Sun size={15} className="text-[#707a8a]" />
+                <Sun size={15} className="text-muted-foreground" />
               ) : (
-                <Moon size={15} className="text-[#707a8a]" />
+                <Moon size={15} className="text-muted-foreground" />
               )}
               {theme === 'dark' ? 'Light mode' : 'Dark mode'}
             </button>
@@ -154,9 +152,9 @@ export function SideNav(): JSX.Element {
             <button
               disabled={isPending}
               onClick={() => logout(undefined, { onSettled: () => navigate('/login') })}
-              className="flex w-full items-center gap-3 border-t border-[#3a4149] px-3 py-2.5 text-sm text-[#eaecef] transition-colors hover:bg-[#353d47] disabled:opacity-50"
+              className="flex w-full items-center gap-3 border-t border-border px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted disabled:opacity-50"
             >
-              <LogOut size={15} className="text-[#707a8a]" />
+              <LogOut size={15} className="text-muted-foreground" />
               Log out
             </button>
           </div>

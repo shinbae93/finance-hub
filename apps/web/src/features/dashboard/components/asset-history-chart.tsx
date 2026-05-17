@@ -45,9 +45,9 @@ function ChartTooltip({ active, payload, label }: TooltipContentProps) {
   const rawValue = payload[0]?.value;
   const value = typeof rawValue === 'number' ? rawValue : 0;
   return (
-    <div className="rounded-md border border-[#2b3139] bg-[#2b3139] px-3 py-2 text-xs">
-      <p className="text-[#929aa5]">{label}</p>
-      <p className="font-number font-semibold text-[#eaecef]">
+    <div className="rounded-md border border-border bg-muted px-3 py-2 text-xs">
+      <p className="text-muted-foreground">{label}</p>
+      <p className="font-number font-semibold text-foreground">
         ₫{(value * 1_000_000).toLocaleString('vi-VN')}
       </p>
     </div>
@@ -61,9 +61,9 @@ export function AssetHistoryChart(): JSX.Element {
   const gradientId = `assetGradient-${uid}`;
 
   return (
-    <div className="flex flex-1 flex-col rounded-xl border border-[#2b3139] bg-[#1e2329] p-5">
+    <div className="flex flex-1 flex-col rounded-xl border border-border bg-card p-5">
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-xs font-medium uppercase tracking-wider text-[#929aa5]">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Total Assets Over Time
         </p>
         <div className="flex gap-1">
@@ -74,7 +74,7 @@ export function AssetHistoryChart(): JSX.Element {
               className={`rounded px-2.5 py-1 text-xs font-medium transition-colors ${
                 range === r
                   ? 'bg-[#fcd535] text-[#181a20]'
-                  : 'bg-[#2b3139] text-[#eaecef] hover:bg-[#353d47]'
+                  : 'bg-muted text-foreground hover:bg-muted/80'
               }`}
             >
               {r}
@@ -92,10 +92,10 @@ export function AssetHistoryChart(): JSX.Element {
                 <stop offset="100%" stopColor="#fcd535" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke="#2b3139" strokeDasharray="3 3" vertical={false} />
+            <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" vertical={false} />
             <XAxis
               dataKey="month"
-              tick={{ fill: '#707a8a', fontSize: 11 }}
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
               axisLine={false}
               tickLine={false}
             />
