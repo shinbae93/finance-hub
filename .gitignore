@@ -43,3 +43,4 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 # Superpowers brainstorm artifacts
 .superpowers/
+graph.json
