@@ -7,18 +7,16 @@ import {
   TransactionTable,
   AddTransactionModal,
   WinLossList,
-  HoldingsTable,
-  SummaryCards,
+  SummaryTab,
 } from '../features/stocks';
 import { Button } from '@finance-hub/web-ui';
 
-type Tab = 'transactions' | 'winloss' | 'holdings' | 'summary';
+type Tab = 'summary' | 'transactions' | 'winloss';
 
 const TABS: { id: Tab; label: string }[] = [
+  { id: 'summary', label: 'Summary' },
   { id: 'transactions', label: 'Transactions' },
   { id: 'winloss', label: 'Win / Loss' },
-  { id: 'holdings', label: 'Holdings' },
-  { id: 'summary', label: 'Summary' },
 ];
 
 function Spinner(): JSX.Element {
@@ -34,7 +32,7 @@ function QueryError({ message }: { message: string }): JSX.Element {
 }
 
 export function StocksPage(): JSX.Element {
-  const [activeTab, setActiveTab] = useState<Tab>('transactions');
+  const [activeTab, setActiveTab] = useState<Tab>('summary');
   const [modalOpen, setModalOpen] = useState(false);
 
   const { data: transactions, isLoading: txLoading, isError: txError } = useTransactions();
@@ -44,7 +42,7 @@ export function StocksPage(): JSX.Element {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)]">
-      {/* Sidebar */}
+      {/* Sub-nav sidebar */}
       <nav className="w-40 flex-shrink-0 border-r border-border bg-card">
         <div className="px-4 py-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Stocks
@@ -69,6 +67,19 @@ export function StocksPage(): JSX.Element {
 
       {/* Content */}
       <main className="flex-1 overflow-auto bg-background p-6">
+        {activeTab === 'summary' && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-foreground">Summary</h2>
+            {hLoading || sLoading ? (
+              <Spinner />
+            ) : hError || sError ? (
+              <QueryError message="Failed to load summary. Please try again." />
+            ) : holdings && summary ? (
+              <SummaryTab holdings={holdings} summary={summary} />
+            ) : null}
+          </div>
+        )}
+
         {activeTab === 'transactions' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -94,32 +105,6 @@ export function StocksPage(): JSX.Element {
               <QueryError message="Failed to load win/loss data. Please try again." />
             ) : winLoss ? (
               <WinLossList data={winLoss} />
-            ) : null}
-          </div>
-        )}
-
-        {activeTab === 'holdings' && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-foreground">Holdings</h2>
-            {hLoading ? (
-              <Spinner />
-            ) : hError ? (
-              <QueryError message="Failed to load holdings. Please try again." />
-            ) : holdings ? (
-              <HoldingsTable data={holdings} />
-            ) : null}
-          </div>
-        )}
-
-        {activeTab === 'summary' && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-foreground">Summary</h2>
-            {sLoading ? (
-              <Spinner />
-            ) : sError ? (
-              <QueryError message="Failed to load summary. Please try again." />
-            ) : summary ? (
-              <SummaryCards data={summary} />
             ) : null}
           </div>
         )}
