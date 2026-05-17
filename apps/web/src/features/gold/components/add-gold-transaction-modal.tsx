@@ -28,8 +28,9 @@ export function AddGoldTransactionModal({
     reset,
     formState: { errors },
   } = useForm<FormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(schema) as any,
-    defaultValues: { type: 'MUA', date: '', weightGrams: 0, pricePerGram: 0 },
+    defaultValues: { type: 'MUA' as const },
   });
 
   const weight = watch('weightGrams') ?? 0;
@@ -47,7 +48,7 @@ export function AddGoldTransactionModal({
 
   if (!open) return null;
 
-  function onSubmit(_data: any) {
+  function onSubmit(_data: FormValues) {
     // No API yet — just close and reset
     reset();
     onClose();
