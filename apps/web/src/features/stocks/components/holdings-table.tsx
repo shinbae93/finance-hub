@@ -26,10 +26,10 @@ export function HoldingsTable({ data }: Props): JSX.Element {
           {data.holdings.map((h) => (
             <tr key={h.ticker} className="hover:bg-muted/50 transition-colors">
               <td className="px-4 py-2 font-semibold">{h.ticker}</td>
-              <td className="px-4 py-2 text-right">{formatNum(h.shares)}</td>
-              <td className="px-4 py-2 text-right">{formatNum(h.avgCost)}</td>
-              <td className="px-4 py-2 text-right">{formatNum(h.totalInvested)}</td>
-              <td className="px-4 py-2 text-right text-muted-foreground">
+              <td className="px-4 py-2 text-right font-number">{formatNum(h.shares)}</td>
+              <td className="px-4 py-2 text-right font-number">{formatNum(h.avgCost)}</td>
+              <td className="px-4 py-2 text-right font-number">{formatNum(h.totalInvested)}</td>
+              <td className="px-4 py-2 text-right font-number text-muted-foreground">
                 {formatNum(h.totalFeesPaid)}
               </td>
             </tr>
@@ -40,8 +40,12 @@ export function HoldingsTable({ data }: Props): JSX.Element {
             <td className="px-4 py-2" colSpan={3}>
               Total
             </td>
-            <td className="px-4 py-2 text-right text-primary">{formatNum(data.totalInvested)}</td>
-            <td className="px-4 py-2 text-right text-primary">{formatNum(data.totalFeesPaid)}</td>
+            <td className="px-4 py-2 text-right font-number text-primary">
+              {formatNum(data.totalInvested)}
+            </td>
+            <td className="px-4 py-2 text-right font-number text-primary">
+              {formatNum(data.totalFeesPaid)}
+            </td>
           </tr>
         </tfoot>
       </table>
