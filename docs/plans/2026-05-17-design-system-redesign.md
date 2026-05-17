@@ -1,14 +1,14 @@
-# Binance Design System Redesign Implementation Plan
+# Design System Redesign Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Redesign the finance-hub frontend to match the Binance design system — dark-first theme, Binance Yellow primary, Inter + IBM Plex Mono fonts, Binance token layer, persistent theme toggle in the top nav.
+**Goal:** Redesign the finance-hub frontend to match the design system — dark-first theme, primary yellow primary, Inter + IBM Plex Mono fonts, token layer, persistent theme toggle in the top nav.
 
 **Architecture:** CSS custom properties in `globals.css` map all design tokens; Tailwind `darkMode: 'class'` toggles them. A `ThemeProvider` context stores the active theme in `localStorage` and applies/removes the `dark` class on `<html>`. A new `AppShell` wraps all protected routes with a top nav that contains the theme toggle.
 
 **Tech Stack:** React 19, Tailwind CSS (class-based dark mode), shadcn primitives (CVA), `@fontsource/inter`, `@fontsource/ibm-plex-mono`, `lucide-react`
 
-**Branch:** `feat/binance-design-system` (check it out before starting)
+**Branch:** `feat/update-design-system` (check it out before starting)
 
 ---
 
@@ -45,10 +45,10 @@
 - [ ] **Step 1: Create and checkout the feature branch**
 
 ```bash
-git checkout -b feat/binance-design-system
+git checkout -b feat/update-design-system
 ```
 
-Expected: `Switched to a new branch 'feat/binance-design-system'`
+Expected: `Switched to a new branch 'feat/update-design-system'`
 
 - [ ] **Step 2: Install font packages and lucide-react**
 
@@ -73,7 +73,7 @@ git commit -m "chore: add fontsource and lucide-react dependencies"
 
 - Modify: `libs/web-ui/src/styles/globals.css`
 
-- [ ] **Step 1: Replace the entire file with Binance token mapping**
+- [ ] **Step 1: Replace the entire file with design token mapping**
 
 ```css
 @import '@fontsource/inter/400.css';
@@ -160,7 +160,7 @@ Open `libs/web-ui/tailwind.preset.js` and confirm `darkMode: 'class'` is present
 
 ```bash
 git add libs/web-ui/src/styles/globals.css
-git commit -m "feat(design): replace CSS tokens with Binance design system, add Inter + IBM Plex Mono fonts"
+git commit -m "feat(design): replace CSS tokens with design system, add Inter + IBM Plex Mono fonts"
 ```
 
 ---
@@ -280,7 +280,7 @@ CardContent.displayName = 'CardContent';
 
 ```bash
 git add libs/web-ui/src/components/ui/card.tsx
-git commit -m "feat(design): update Card to rounded-xl, remove shadow per Binance design system"
+git commit -m "feat(design): update Card to rounded-xl, remove shadow per design system"
 ```
 
 ---
@@ -560,7 +560,7 @@ git commit -m "feat(design): add AppShell layout, wire into router for all prote
 
 - Modify: `apps/web/src/features/auth/components/auth-layout.tsx`
 
-- [ ] **Step 1: Replace AuthLayout with dark-canvas Binance-style layout**
+- [ ] **Step 1: Replace AuthLayout with dark-canvas layout**
 
 ```tsx
 import type { ReactNode } from 'react';
@@ -1004,5 +1004,5 @@ Expected: no errors.
 - [ ] **Step 8: Final commit if any fixes needed, then push branch**
 
 ```bash
-git push -u origin feat/binance-design-system
+git push -u origin feat/update-design-system
 ```
