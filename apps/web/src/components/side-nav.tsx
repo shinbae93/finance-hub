@@ -1,15 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  LayoutDashboard,
-  LogOut,
-  Moon,
-  Sun,
-  TrendingUp,
-} from 'lucide-react';
+import { ChevronUp, LayoutDashboard, LogOut, Moon, PanelLeft, Sun, TrendingUp } from 'lucide-react';
 import { useAuthStore, useLogout } from '../features/auth';
 import { useTheme } from '../lib/theme';
 
@@ -52,21 +43,12 @@ export function SideNav(): JSX.Element {
 
   return (
     <aside
-      className={`group/sidebar sticky top-0 flex flex-shrink-0 self-stretch flex-col border-r border-border bg-card transition-all duration-200 ${
+      className={`sticky top-0 flex flex-shrink-0 self-stretch flex-col border-r border-border bg-card transition-all duration-200 ${
         collapsed ? 'w-[72px]' : 'w-[220px]'
       }`}
     >
-      {/* Floating collapse handle on the right border */}
-      <button
-        onClick={toggleCollapse}
-        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        className="absolute -right-3 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card text-muted-foreground opacity-0 shadow-sm transition-all duration-150 hover:bg-muted hover:text-foreground group-hover/sidebar:opacity-100"
-      >
-        {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
-      </button>
-
-      {/* Header: wordmark only */}
-      <div className="flex h-16 items-center border-b border-border px-4">
+      {/* Header: wordmark + toggle */}
+      <div className="flex h-16 items-center justify-between border-b border-border px-3">
         {collapsed ? (
           <span className="text-sm font-bold text-[#fcd535]">FH</span>
         ) : (
@@ -74,6 +56,14 @@ export function SideNav(): JSX.Element {
             FinanceHub
           </Link>
         )}
+        <button
+          onClick={toggleCollapse}
+          aria-label="Toggle Sidebar"
+          title="Toggle Sidebar"
+          className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        >
+          <PanelLeft size={16} />
+        </button>
       </div>
 
       {/* Nav links */}
