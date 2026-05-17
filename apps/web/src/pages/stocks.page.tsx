@@ -56,7 +56,7 @@ export function StocksPage(): JSX.Element {
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
                   activeTab === tab.id
-                    ? 'border-r-2 border-primary bg-muted font-medium text-foreground'
+                    ? 'border-r-2 border-primary bg-muted font-medium text-primary'
                     : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                 }`}
               >
