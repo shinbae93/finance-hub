@@ -5,6 +5,7 @@ import { DashboardPage } from '../pages/dashboard.page';
 import { StocksPage } from '../pages/stocks.page';
 import { NotFoundPage } from '../pages/not-found.page';
 import { ProtectedRoute } from '../features/auth/guards/protected-route';
+import { AppShell } from '../components/app-shell';
 
 export function AppRoutes(): JSX.Element {
   return (
@@ -16,7 +17,9 @@ export function AppRoutes(): JSX.Element {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <AppShell>
+              <DashboardPage />
+            </AppShell>
           </ProtectedRoute>
         }
       />
@@ -24,7 +27,9 @@ export function AppRoutes(): JSX.Element {
         path="/stocks"
         element={
           <ProtectedRoute>
-            <StocksPage />
+            <AppShell>
+              <StocksPage />
+            </AppShell>
           </ProtectedRoute>
         }
       />
