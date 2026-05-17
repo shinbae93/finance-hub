@@ -4,6 +4,7 @@ import { RegisterPage } from '../pages/register.page';
 import { DashboardPage } from '../pages/dashboard.page';
 import { StocksPage } from '../pages/stocks.page';
 import { CashPage } from '../pages/cash.page';
+import { GoldPage } from '../pages/gold.page';
 import { NotFoundPage } from '../pages/not-found.page';
 import { ProtectedRoute } from '../features/auth/guards/protected-route';
 import { AppShell } from '../components/app-shell';
@@ -40,6 +41,16 @@ export function AppRoutes(): JSX.Element {
           <ProtectedRoute>
             <AppShell>
               <CashPage />
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gold"
+        element={
+          <ProtectedRoute>
+            <AppShell>
+              <GoldPage />
             </AppShell>
           </ProtectedRoute>
         }
