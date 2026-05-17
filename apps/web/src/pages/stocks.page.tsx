@@ -10,6 +10,7 @@ import {
   HoldingsTable,
   SummaryCards,
 } from '../features/stocks';
+import { Button } from '@finance-hub/web-ui';
 
 type Tab = 'transactions' | 'winloss' | 'holdings' | 'summary';
 
@@ -29,7 +30,7 @@ function Spinner(): JSX.Element {
 }
 
 function QueryError({ message }: { message: string }): JSX.Element {
-  return <p className="text-sm text-red-500 py-8 text-center">{message}</p>;
+  return <p className="py-8 text-center text-sm text-destructive">{message}</p>;
 }
 
 export function StocksPage(): JSX.Element {
@@ -42,10 +43,10 @@ export function StocksPage(): JSX.Element {
   const { data: summary, isLoading: sLoading, isError: sError } = useSummary();
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-[calc(100vh-4rem)]">
       {/* Sidebar */}
-      <nav className="w-36 flex-shrink-0 border-r border-border bg-card">
-        <div className="px-4 py-5 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+      <nav className="w-40 flex-shrink-0 border-r border-border bg-card">
+        <div className="px-4 py-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Stocks
         </div>
         <ul>
@@ -55,7 +56,7 @@ export function StocksPage(): JSX.Element {
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
                   activeTab === tab.id
-                    ? 'border-r-2 border-primary bg-muted text-primary font-medium'
+                    ? 'border-r-2 border-primary bg-muted font-medium text-primary'
                     : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                 }`}
               >
@@ -67,17 +68,12 @@ export function StocksPage(): JSX.Element {
       </nav>
 
       {/* Content */}
-      <main className="flex-1 p-6 overflow-auto">
+      <main className="flex-1 overflow-auto bg-background p-6">
         {activeTab === 'transactions' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Transactions</h2>
-              <button
-                onClick={() => setModalOpen(true)}
-                className="rounded bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              >
-                + Add Transaction
-              </button>
+              <h2 className="text-lg font-semibold text-foreground">Transactions</h2>
+              <Button onClick={() => setModalOpen(true)}>+ Add Transaction</Button>
             </div>
             {txLoading ? (
               <Spinner />
@@ -91,7 +87,7 @@ export function StocksPage(): JSX.Element {
 
         {activeTab === 'winloss' && (
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Win / Loss</h2>
+            <h2 className="text-lg font-semibold text-foreground">Win / Loss</h2>
             {wlLoading ? (
               <Spinner />
             ) : wlError ? (
@@ -104,7 +100,7 @@ export function StocksPage(): JSX.Element {
 
         {activeTab === 'holdings' && (
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Holdings</h2>
+            <h2 className="text-lg font-semibold text-foreground">Holdings</h2>
             {hLoading ? (
               <Spinner />
             ) : hError ? (
@@ -117,7 +113,7 @@ export function StocksPage(): JSX.Element {
 
         {activeTab === 'summary' && (
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Summary</h2>
+            <h2 className="text-lg font-semibold text-foreground">Summary</h2>
             {sLoading ? (
               <Spinner />
             ) : sError ? (

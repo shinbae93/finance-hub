@@ -20,7 +20,7 @@ function StatCard({
     <div className="rounded-lg border border-border p-4 text-center">
       <p className="text-xs text-muted-foreground uppercase mb-2">{label}</p>
       <p
-        className={`text-xl font-bold ${positive === true ? 'text-green-500' : positive === false ? 'text-red-500' : ''}`}
+        className={`text-xl font-bold font-number ${positive === true ? 'text-up' : positive === false ? 'text-down' : 'text-foreground'}`}
       >
         {value} ₫
       </p>
@@ -92,8 +92,8 @@ export function SummaryCards({ data }: Props): JSX.Element {
               {data.byTicker.map((t) => (
                 <tr key={t.ticker} className="hover:bg-muted/50">
                   <td className="px-4 py-2 font-semibold">{t.ticker}</td>
-                  <td className="px-4 py-2 text-right">{formatNum(t.totalInvested)}</td>
-                  <td className="px-4 py-2 text-right">
+                  <td className="px-4 py-2 text-right font-number">{formatNum(t.totalInvested)}</td>
+                  <td className="px-4 py-2 text-right font-number">
                     {t.totalReceived > 0 ? formatNum(t.totalReceived) : '—'}
                   </td>
                 </tr>
