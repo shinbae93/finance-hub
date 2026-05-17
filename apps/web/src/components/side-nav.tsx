@@ -1,14 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import {
-  ChevronLeft,
-  ChevronRight,
-  LayoutDashboard,
-  LogOut,
-  Moon,
-  Sun,
-  TrendingUp,
-} from 'lucide-react';
+import { ChevronUp, LayoutDashboard, LogOut, Moon, PanelLeft, Sun, TrendingUp } from 'lucide-react';
 import { useAuthStore, useLogout } from '../features/auth';
 import { useTheme } from '../lib/theme';
 
@@ -27,6 +19,8 @@ export function SideNav(): JSX.Element {
   const [collapsed, setCollapsed] = useState<boolean>(() => {
     return localStorage.getItem('sidebar-collapsed') === 'true';
   });
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
 
   function toggleCollapse() {
     const next = !collapsed;
@@ -34,16 +28,28 @@ export function SideNav(): JSX.Element {
     localStorage.setItem('sidebar-collapsed', String(next));
   }
 
+  // Close profile popover when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const avatarInitial = user?.fullName?.charAt(0).toUpperCase() ?? '?';
+  const displayName = user?.fullName ?? user?.email ?? '';
 
   return (
     <aside
-      className={`flex self-stretch flex-col border-r border-[#2b3139] bg-[#1e2329] transition-all duration-200 ${
+      className={`sticky top-0 flex flex-shrink-0 self-stretch flex-col border-r border-[#2b3139] bg-[#1e2329] transition-all duration-200 ${
         collapsed ? 'w-[72px]' : 'w-[220px]'
-      } sticky top-0 flex-shrink-0`}
+      }`}
     >
-      {/* Wordmark / Monogram */}
-      <div className="flex h-16 items-center border-b border-[#2b3139] px-4">
+      {/* Header: wordmark + collapse toggle */}
+      <div className="flex h-16 items-center justify-between border-b border-[#2b3139] px-4">
         {collapsed ? (
           <span className="text-sm font-bold text-[#fcd535]">FH</span>
         ) : (
@@ -51,6 +57,13 @@ export function SideNav(): JSX.Element {
             FinanceHub
           </Link>
         )}
+        <button
+          onClick={toggleCollapse}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          className="flex h-7 w-7 items-center justify-center rounded-md text-[#707a8a] transition-colors hover:bg-[#2b3139] hover:text-[#eaecef]"
+        >
+          <PanelLeft size={16} />
+        </button>
       </div>
 
       {/* Nav links */}
@@ -80,74 +93,73 @@ export function SideNav(): JSX.Element {
         })}
       </nav>
 
-      {/* Bottom: user info + controls */}
-      <div className="flex flex-col gap-2 border-t border-[#2b3139] p-3">
-        {/* User info (expanded only) */}
-        {!collapsed && user && (
-          <div className="flex items-center gap-2 px-1">
-            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#fcd535] text-xs font-bold text-[#181a20]">
-              {avatarInitial}
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-xs font-semibold text-[#eaecef]">
-                {user.fullName ?? user.email}
-              </p>
-              <p className="truncate text-[10px] text-[#707a8a]">{user.email}</p>
-            </div>
+      {/* Bottom: user profile button + popover */}
+      <div className="border-t border-[#2b3139] p-2" ref={profileRef}>
+        {/* Profile trigger button */}
+        <button
+          onClick={() => setProfileOpen((o) => !o)}
+          className={`flex w-full items-center rounded-md px-2 py-2 transition-colors hover:bg-[#2b3139] ${
+            collapsed ? 'justify-center' : 'gap-2'
+          }`}
+        >
+          {/* Avatar */}
+          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#fcd535] text-xs font-bold text-[#181a20]">
+            {avatarInitial}
           </div>
-        )}
-
-        {/* Avatar only (collapsed) */}
-        {collapsed && user && (
-          <div className="flex justify-center">
-            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#fcd535] text-xs font-bold text-[#181a20]">
-              {avatarInitial}
-            </div>
-          </div>
-        )}
-
-        {/* Controls row */}
-        <div className={`flex items-center ${collapsed ? 'flex-col gap-2' : 'justify-between'}`}>
-          {/* Theme toggle */}
-          <button
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-[#707a8a] transition-colors hover:bg-[#2b3139] hover:text-[#eaecef]"
-          >
-            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
-          </button>
-
-          {/* Sign out */}
-          <button
-            disabled={isPending}
-            onClick={() => logout(undefined, { onSettled: () => navigate('/login') })}
-            aria-label="Sign out"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-[#707a8a] transition-colors hover:bg-[#2b3139] hover:text-[#eaecef] disabled:opacity-50"
-          >
-            <LogOut size={15} />
-          </button>
-
-          {/* Collapse toggle (only in expanded row) */}
           {!collapsed && (
-            <button
-              onClick={toggleCollapse}
-              aria-label="Collapse sidebar"
-              className="flex h-8 w-8 items-center justify-center rounded-md text-[#707a8a] transition-colors hover:bg-[#2b3139] hover:text-[#eaecef]"
-            >
-              <ChevronLeft size={15} />
-            </button>
+            <>
+              <div className="min-w-0 flex-1 text-left">
+                <p className="truncate text-xs font-semibold text-[#eaecef]">{displayName}</p>
+                <p className="truncate text-[10px] text-[#707a8a]">{user?.email}</p>
+              </div>
+              <ChevronUp
+                size={14}
+                className={`flex-shrink-0 text-[#707a8a] transition-transform ${profileOpen ? 'rotate-180' : ''}`}
+              />
+            </>
           )}
-        </div>
+        </button>
 
-        {/* Expand button (collapsed state only) */}
-        {collapsed && (
-          <button
-            onClick={toggleCollapse}
-            aria-label="Expand sidebar"
-            className="flex h-8 w-8 items-center justify-center self-center rounded-md text-[#707a8a] transition-colors hover:bg-[#2b3139] hover:text-[#eaecef]"
-          >
-            <ChevronRight size={15} />
-          </button>
+        {/* Profile popover */}
+        {profileOpen && (
+          <div className="absolute bottom-[60px] left-2 right-2 z-50 overflow-hidden rounded-lg border border-[#2b3139] bg-[#2b3139] shadow-lg">
+            {/* User identity */}
+            <div className="flex items-center gap-3 border-b border-[#3a4149] px-3 py-3">
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#fcd535] text-sm font-bold text-[#181a20]">
+                {avatarInitial}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-[#eaecef]">{displayName}</p>
+                <p className="truncate text-xs text-[#707a8a]">{user?.email}</p>
+              </div>
+            </div>
+
+            {/* Theme toggle */}
+            <button
+              onClick={() => {
+                toggleTheme();
+                setProfileOpen(false);
+              }}
+              className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-[#eaecef] transition-colors hover:bg-[#353d47]"
+            >
+              {theme === 'dark' ? (
+                <Sun size={15} className="text-[#707a8a]" />
+              ) : (
+                <Moon size={15} className="text-[#707a8a]" />
+              )}
+              {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            </button>
+
+            {/* Sign out */}
+            <button
+              disabled={isPending}
+              onClick={() => logout(undefined, { onSettled: () => navigate('/login') })}
+              className="flex w-full items-center gap-3 border-t border-[#3a4149] px-3 py-2.5 text-sm text-[#eaecef] transition-colors hover:bg-[#353d47] disabled:opacity-50"
+            >
+              <LogOut size={15} className="text-[#707a8a]" />
+              Log out
+            </button>
+          </div>
         )}
       </div>
     </aside>
