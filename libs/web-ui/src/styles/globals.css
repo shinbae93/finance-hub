@@ -28,15 +28,15 @@
   }
 
   .dark {
-    --background: 228 14% 6%;
+    --background: 222 14% 11%;
     --foreground: 216 18% 92%;
-    --card: 226 14% 14%;
+    --card: 224 14% 16%;
     --card-foreground: 0 0% 100%;
     --primary: 46 97% 59%;
     --primary-foreground: 225 14% 10%;
-    --muted: 222 12% 18%;
+    --muted: 222 12% 21%;
     --muted-foreground: 215 12% 57%;
-    --border: 222 12% 21%;
+    --border: 222 12% 24%;
     --input: 222 12% 21%;
     --ring: 46 97% 59%;
     --destructive: 354 89% 62%;
