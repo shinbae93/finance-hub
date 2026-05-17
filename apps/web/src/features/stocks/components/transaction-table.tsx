@@ -62,18 +62,22 @@ export function TransactionTable({ transactions }: Props): JSX.Element {
               <td className="px-3 py-2 font-semibold">{tx.ticker}</td>
               <td className="px-3 py-2">
                 <span
-                  className={
-                    tx.type === 'MUA' ? 'text-green-500 font-medium' : 'text-red-500 font-medium'
-                  }
+                  className={tx.type === 'MUA' ? 'text-up font-medium' : 'text-down font-medium'}
                 >
                   {tx.type === 'MUA' ? 'Mua' : 'Bán'}
                 </span>
               </td>
-              <td className="px-3 py-2 text-right">{formatNumber(tx.volume)}</td>
-              <td className="px-3 py-2 text-right">{formatNumber(tx.price)}</td>
-              <td className="px-3 py-2 text-right text-muted-foreground">{formatNumber(tx.fee)}</td>
-              <td className="px-3 py-2 text-right text-muted-foreground">{formatNumber(tx.tax)}</td>
-              <td className="px-3 py-2 text-right font-medium">{formatNumber(tx.totalAmount)}</td>
+              <td className="px-3 py-2 text-right font-number">{formatNumber(tx.volume)}</td>
+              <td className="px-3 py-2 text-right font-number">{formatNumber(tx.price)}</td>
+              <td className="px-3 py-2 text-right font-number text-muted-foreground">
+                {formatNumber(tx.fee)}
+              </td>
+              <td className="px-3 py-2 text-right font-number text-muted-foreground">
+                {formatNumber(tx.tax)}
+              </td>
+              <td className="px-3 py-2 text-right font-number font-medium">
+                {formatNumber(tx.totalAmount)}
+              </td>
               <td className="px-3 py-2 text-right">
                 <button
                   onClick={() => handleDelete(tx.id)}
