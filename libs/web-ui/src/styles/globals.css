@@ -1,3 +1,10 @@
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,19 +12,35 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    --foreground: 225 14% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --primary: 222 47% 11%;
-    --primary-foreground: 210 40% 98%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 222 47% 11%;
-    --radius: 0.5rem;
+    --card-foreground: 225 14% 10%;
+    --primary: 46 97% 59%;
+    --primary-foreground: 225 14% 10%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 215 12% 47%;
+    --border: 214 14% 90%;
+    --input: 214 14% 90%;
+    --ring: 46 97% 59%;
+    --radius: 0.375rem;
+    --destructive: 354 89% 62%;
+    --destructive-foreground: 0 0% 100%;
+  }
+
+  .dark {
+    --background: 228 14% 6%;
+    --foreground: 216 18% 92%;
+    --card: 226 14% 14%;
+    --card-foreground: 0 0% 100%;
+    --primary: 46 97% 59%;
+    --primary-foreground: 225 14% 10%;
+    --muted: 222 12% 18%;
+    --muted-foreground: 215 12% 57%;
+    --border: 222 12% 21%;
+    --input: 222 12% 21%;
+    --ring: 46 97% 59%;
+    --destructive: 354 89% 62%;
+    --destructive-foreground: 0 0% 100%;
   }
 
   * {
@@ -27,5 +50,25 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-number {
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .text-up {
+    color: #0ecb81;
+  }
+
+  .text-down {
+    color: #f6465d;
   }
 }
