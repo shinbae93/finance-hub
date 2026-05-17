@@ -1,12 +1,13 @@
 import { useRef, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronUp, LayoutDashboard, LogOut, Moon, Sun, TrendingUp } from 'lucide-react';
+import { ChevronUp, LayoutDashboard, LogOut, Moon, Sun, TrendingUp, Wallet } from 'lucide-react';
 import { useAuthStore, useLogout } from '../features/auth';
 import { useTheme } from '../lib/theme';
 
 const NAV_LINKS = [
   { to: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
   { to: '/stocks', label: 'Stocks', Icon: TrendingUp },
+  { to: '/cash', label: 'Cash', Icon: Wallet },
 ];
 
 interface SideNavProps {

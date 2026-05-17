@@ -27,6 +27,11 @@ pnpm db:studio        # Open Prisma Studio
 
 Swagger UI is at `http://localhost:3000/api/docs`.
 
+## Docs
+
+- Design specs go in `docs/specs/`
+- Implementation plans go in `docs/plans/`
+
 ## Design System
 
 See [DESIGN.md](./DESIGN.md) for the full design system spec — colors, typography, spacing, and component patterns.
