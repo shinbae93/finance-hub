@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   ChevronUp,
-  Coins,
+  Cuboid,
   LayoutDashboard,
   LogOut,
   Moon,
@@ -17,7 +17,7 @@ const NAV_LINKS = [
   { to: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
   { to: '/stocks', label: 'Stocks', Icon: TrendingUp },
   { to: '/cash', label: 'Cash', Icon: Wallet },
-  { to: '/gold', label: 'Gold', Icon: Coins },
+  { to: '/gold', label: 'Gold', Icon: Cuboid },
 ];
 
 interface SideNavProps {
