@@ -27,6 +27,8 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        'trading-up': '#0ecb81',
+        'trading-down': '#f6465d',
       },
       borderRadius: {
         lg: 'var(--radius)',
