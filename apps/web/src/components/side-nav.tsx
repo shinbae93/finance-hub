@@ -1,6 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronUp, LayoutDashboard, LogOut, Moon, PanelLeft, Sun, TrendingUp } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  LayoutDashboard,
+  LogOut,
+  Moon,
+  Sun,
+  TrendingUp,
+} from 'lucide-react';
 import { useAuthStore, useLogout } from '../features/auth';
 import { useTheme } from '../lib/theme';
 
@@ -43,12 +52,21 @@ export function SideNav(): JSX.Element {
 
   return (
     <aside
-      className={`sticky top-0 flex flex-shrink-0 self-stretch flex-col border-r border-border bg-card transition-all duration-200 ${
+      className={`group/sidebar sticky top-0 flex flex-shrink-0 self-stretch flex-col border-r border-border bg-card transition-all duration-200 ${
         collapsed ? 'w-[72px]' : 'w-[220px]'
       }`}
     >
-      {/* Header: wordmark + collapse toggle */}
-      <div className="flex h-16 items-center justify-between border-b border-border px-4">
+      {/* Floating collapse handle on the right border */}
+      <button
+        onClick={toggleCollapse}
+        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        className="absolute -right-3 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card text-muted-foreground opacity-0 shadow-sm transition-all duration-150 hover:bg-muted hover:text-foreground group-hover/sidebar:opacity-100"
+      >
+        {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+      </button>
+
+      {/* Header: wordmark only */}
+      <div className="flex h-16 items-center border-b border-border px-4">
         {collapsed ? (
           <span className="text-sm font-bold text-[#fcd535]">FH</span>
         ) : (
@@ -56,13 +74,6 @@ export function SideNav(): JSX.Element {
             FinanceHub
           </Link>
         )}
-        <button
-          onClick={toggleCollapse}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          <PanelLeft size={16} />
-        </button>
       </div>
 
       {/* Nav links */}
@@ -94,7 +105,6 @@ export function SideNav(): JSX.Element {
 
       {/* Bottom: user profile button + popover */}
       <div className="border-t border-border p-2" ref={profileRef}>
-        {/* Profile trigger button */}
         <button
           onClick={() => setProfileOpen((o) => !o)}
           className={`flex w-full items-center rounded-md px-2 py-2 transition-colors hover:bg-muted ${
@@ -118,10 +128,8 @@ export function SideNav(): JSX.Element {
           )}
         </button>
 
-        {/* Profile popover */}
         {profileOpen && (
           <div className="absolute bottom-[60px] left-2 right-2 z-50 overflow-hidden rounded-lg border border-border bg-card shadow-lg">
-            {/* User identity */}
             <div className="flex items-center gap-3 border-b border-border px-3 py-3">
               <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#fcd535] text-sm font-bold text-[#181a20]">
                 {avatarInitial}
@@ -132,7 +140,6 @@ export function SideNav(): JSX.Element {
               </div>
             </div>
 
-            {/* Theme toggle */}
             <button
               onClick={() => {
                 toggleTheme();
@@ -148,7 +155,6 @@ export function SideNav(): JSX.Element {
               {theme === 'dark' ? 'Light mode' : 'Dark mode'}
             </button>
 
-            {/* Sign out */}
             <button
               disabled={isPending}
               onClick={() => logout(undefined, { onSettled: () => navigate('/login') })}
