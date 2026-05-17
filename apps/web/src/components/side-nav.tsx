@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronUp, LayoutDashboard, LogOut, Moon, PanelLeft, Sun, TrendingUp } from 'lucide-react';
+import { ChevronUp, LayoutDashboard, LogOut, Moon, Sun, TrendingUp } from 'lucide-react';
 import { useAuthStore, useLogout } from '../features/auth';
 import { useTheme } from '../lib/theme';
 
@@ -9,24 +9,19 @@ const NAV_LINKS = [
   { to: '/stocks', label: 'Stocks', Icon: TrendingUp },
 ];
 
-export function SideNav(): JSX.Element {
+interface SideNavProps {
+  collapsed: boolean;
+}
+
+export function SideNav({ collapsed }: SideNavProps): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const { mutate: logout, isPending } = useLogout();
   const { theme, toggleTheme } = useTheme();
 
-  const [collapsed, setCollapsed] = useState<boolean>(() => {
-    return localStorage.getItem('sidebar-collapsed') === 'true';
-  });
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
-
-  function toggleCollapse() {
-    const next = !collapsed;
-    setCollapsed(next);
-    localStorage.setItem('sidebar-collapsed', String(next));
-  }
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -47,8 +42,8 @@ export function SideNav(): JSX.Element {
         collapsed ? 'w-[72px]' : 'w-[220px]'
       }`}
     >
-      {/* Header: wordmark + toggle */}
-      <div className="flex h-16 items-center justify-between border-b border-border px-3">
+      {/* Header: wordmark */}
+      <div className="flex h-16 items-center border-b border-border px-4">
         {collapsed ? (
           <span className="text-sm font-bold text-[#fcd535]">FH</span>
         ) : (
@@ -56,14 +51,6 @@ export function SideNav(): JSX.Element {
             FinanceHub
           </Link>
         )}
-        <button
-          onClick={toggleCollapse}
-          aria-label="Toggle Sidebar"
-          title="Toggle Sidebar"
-          className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        >
-          <PanelLeft size={16} />
-        </button>
       </div>
 
       {/* Nav links */}
