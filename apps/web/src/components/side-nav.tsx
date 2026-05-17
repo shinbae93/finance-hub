@@ -38,7 +38,7 @@ export function SideNav(): JSX.Element {
 
   return (
     <aside
-      className={`flex h-screen flex-col border-r border-[#2b3139] bg-[#1e2329] transition-all duration-200 ${
+      className={`flex self-stretch flex-col border-r border-[#2b3139] bg-[#1e2329] transition-all duration-200 ${
         collapsed ? 'w-[72px]' : 'w-[220px]'
       } sticky top-0 flex-shrink-0`}
     >
@@ -61,11 +61,13 @@ export function SideNav(): JSX.Element {
             <Link
               key={to}
               to={to}
-              className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+              className={`flex rounded-md text-sm transition-colors ${
+                collapsed ? 'flex-col items-center gap-1 px-2 py-3' : 'items-center gap-3 px-3 py-2'
+              } ${
                 active
                   ? 'bg-[#fcd535] font-semibold text-[#181a20]'
                   : 'text-[#707a8a] hover:bg-[#2b3139] hover:text-[#eaecef]'
-              } ${collapsed ? 'flex-col gap-1 px-2 py-3' : ''}`}
+              }`}
             >
               <Icon size={16} className="flex-shrink-0" />
               {collapsed ? (
@@ -87,7 +89,9 @@ export function SideNav(): JSX.Element {
               {avatarInitial}
             </div>
             <div className="min-w-0">
-              <p className="truncate text-xs font-semibold text-[#eaecef]">{user.fullName}</p>
+              <p className="truncate text-xs font-semibold text-[#eaecef]">
+                {user.fullName ?? user.email}
+              </p>
               <p className="truncate text-[10px] text-[#707a8a]">{user.email}</p>
             </div>
           </div>
