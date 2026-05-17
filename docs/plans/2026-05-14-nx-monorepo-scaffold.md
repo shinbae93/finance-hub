@@ -1,6 +1,6 @@
 # Nx Monorepo Scaffold Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Stand up an Nx integrated monorepo containing a NestJS API and a Vite + React web app, wired end-to-end through a JWT auth vertical slice (register → login → protected `/users/me` → logout) over PostgreSQL/Prisma, with shared TS types, Tailwind/shadcn, Jest + Playwright tests, ESLint/Prettier, husky hooks, and module-boundary enforcement.
 
@@ -8,7 +8,7 @@
 
 **Tech Stack:** Nx 20.x, pnpm 9.x, Node 20 LTS, NestJS 10.x, React 18, Vite 5.x, React Router v6, TanStack Query v5, zustand 4.x, Tailwind CSS 3.x, shadcn/ui, Prisma 5.x, PostgreSQL 16, bcrypt, jsonwebtoken, Passport JWT, zod, class-validator, Jest, Playwright, ESLint, Prettier, husky, lint-staged.
 
-**Spec:** `docs/superpowers/specs/2026-05-14-nx-monorepo-scaffold-design.md`
+**Spec:** `docs/specs/2026-05-14-nx-monorepo-scaffold-design.md`
 
 **Prerequisites for the engineer running this plan:**
 
@@ -161,7 +161,7 @@ finance-hub/
 │       ├── project.json
 │       ├── playwright.config.ts                  # Phase 5
 │       └── src/auth.spec.ts                      # Phase 7
-└── docs/superpowers/
+└── docs/
     ├── specs/2026-05-14-nx-monorepo-scaffold-design.md  # exists
     └── plans/2026-05-14-nx-monorepo-scaffold.md         # this file
 ```
@@ -3981,7 +3981,7 @@ The API serves at `http://localhost:3000/api`, the web app at `http://localhost:
 - `libs/shared-utils` — Pure helpers for both sides.
 - `libs/web-ui` — Tailwind preset + shadcn primitives.
 - `prisma/` — Prisma schema and migrations.
-- `docs/superpowers/` — Specs and implementation plans.
+- `docs/` — Specs and implementation plans.
 
 ````
 
@@ -4114,4 +4114,4 @@ Plan is ready.
 
 ---
 
-**Plan complete and saved to `docs/superpowers/plans/2026-05-14-nx-monorepo-scaffold.md`.**
+**Plan complete and saved to `docs/plans/2026-05-14-nx-monorepo-scaffold.md`.**

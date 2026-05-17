@@ -1,20 +1,20 @@
-# Binance Design System Redesign
+# Design System Redesign
 
 **Date:** 2026-05-17  
-**Branch:** `feat/binance-design-system`  
+**Branch:** `feat/update-design-system`  
 **Scope:** Full frontend redesign — token layer, theme system, layout structure, typography, component upgrades
 
 ---
 
 ## Overview
 
-Restyle the finance-hub frontend to match the Binance design system documented in `DESIGN.md`. Default theme is dark. A theme toggle in the top nav allows switching to light mode for comparison. No backend changes. All existing features (auth, stocks) remain functionally identical.
+Restyle the finance-hub frontend to match the design system documented in `DESIGN.md`. Default theme is dark. A theme toggle in the top nav allows switching to light mode for comparison. No backend changes. All existing features (auth, stocks) remain functionally identical.
 
 ---
 
 ## 1. Token Layer
 
-Replace the existing `:root` CSS vars in `libs/web-ui/src/styles/globals.css` with Binance-mapped tokens. Add a `.dark` block.
+Replace the existing `:root` CSS vars in `libs/web-ui/src/styles/globals.css` with design tokens. Add a `.dark` block.
 
 ### Light mode (`:root`)
 
@@ -23,7 +23,7 @@ Replace the existing `:root` CSS vars in `libs/web-ui/src/styles/globals.css` wi
 --foreground: 225 14% 10%; /* ink #181a20 */
 --card: 0 0% 100%; /* canvas-light */
 --card-foreground: 225 14% 10%;
---primary: 46 97% 59%; /* Binance Yellow #fcd535 */
+--primary: 46 97% 59%; /* primary yellow #fcd535 */
 --primary-foreground: 225 14% 10%; /* on-primary #181a20 */
 --muted: 0 0% 96%; /* surface-strong-light #f5f5f5 */
 --muted-foreground: 215 12% 47%; /* muted #707a8a */

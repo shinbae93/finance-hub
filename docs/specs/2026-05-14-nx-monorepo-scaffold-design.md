@@ -73,7 +73,7 @@ finance-hub/
 │   ├── schema.prisma
 │   └── migrations/
 ├── docs/
-│   └── superpowers/
+│
 │       ├── specs/
 │       └── plans/
 ├── .env.example
