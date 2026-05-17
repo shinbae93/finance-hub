@@ -1,12 +1,12 @@
-import type { CashTransaction } from '../data/fake-cash-data';
+import type { CashTransaction, CashTransactionType } from '../data/fake-cash-data';
 
-function TypeBadge({ type }: { type: 'IN' | 'OUT' }) {
+function TypeBadge({ type }: { type: CashTransactionType }) {
   return type === 'IN' ? (
-    <span className="rounded px-1.5 py-0.5 text-xs font-semibold bg-[#e6faf3] text-trading-up">
+    <span className="rounded px-1.5 py-0.5 text-xs font-semibold bg-trading-up/10 text-trading-up">
       IN
     </span>
   ) : (
-    <span className="rounded px-1.5 py-0.5 text-xs font-semibold bg-[#fef0f1] text-trading-down">
+    <span className="rounded px-1.5 py-0.5 text-xs font-semibold bg-trading-down/10 text-trading-down">
       OUT
     </span>
   );

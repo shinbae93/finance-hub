@@ -11,6 +11,7 @@ import {
 import { CHART_DATA, type ChartRange } from '../data/fake-cash-data';
 
 const RANGES: ChartRange[] = ['1M', '6M', '1Y'];
+const PRIMARY = '#fcd535';
 
 function ChartTooltip({ active, payload, label }: TooltipContentProps) {
   if (!active || !payload?.length) return null;
@@ -40,6 +41,7 @@ export function CashChart(): JSX.Element {
           {RANGES.map((r) => (
             <button
               key={r}
+              type="button"
               onClick={() => setRange(r)}
               className={`rounded px-2.5 py-1 text-xs font-medium transition-colors ${
                 range === r
@@ -58,8 +60,8 @@ export function CashChart(): JSX.Element {
           <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#fcd535" stopOpacity={0.2} />
-                <stop offset="100%" stopColor="#fcd535" stopOpacity={0} />
+                <stop offset="0%" stopColor={PRIMARY} stopOpacity={0.2} />
+                <stop offset="100%" stopColor={PRIMARY} stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" vertical={false} />
@@ -73,11 +75,11 @@ export function CashChart(): JSX.Element {
             <Area
               type="monotone"
               dataKey="value"
-              stroke="#fcd535"
+              stroke={PRIMARY}
               strokeWidth={1.5}
               fill={`url(#${gradientId})`}
               dot={false}
-              activeDot={{ r: 4, fill: '#fcd535', strokeWidth: 0 }}
+              activeDot={{ r: 4, fill: PRIMARY, strokeWidth: 0 }}
             />
           </AreaChart>
         </ResponsiveContainer>
