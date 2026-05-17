@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
-import { TopNav } from './top-nav';
+import { SideNav } from './side-nav';
 
 export function AppShell({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <TopNav />
-      <main className="flex-1">{children}</main>
+    <div className="flex min-h-screen bg-background">
+      <SideNav />
+      <main className="flex-1 overflow-y-auto">{children}</main>
     </div>
   );
 }
