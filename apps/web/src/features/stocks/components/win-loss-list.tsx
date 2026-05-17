@@ -38,7 +38,9 @@ export function WinLossList({ data }: Props): JSX.Element {
               <span className="flex items-center gap-2">
                 <span
                   className={
-                    group.totalPnl >= 0 ? 'text-green-500 font-medium' : 'text-red-500 font-medium'
+                    group.totalPnl >= 0
+                      ? 'text-up font-medium font-number'
+                      : 'text-down font-medium font-number'
                   }
                 >
                   {formatPnl(group.totalPnl)} ₫
@@ -65,16 +67,16 @@ export function WinLossList({ data }: Props): JSX.Element {
                     <span className="text-muted-foreground">
                       {new Date(sell.tradeDate).toLocaleDateString('vi-VN')}
                     </span>
-                    <span className="text-right">{formatNum(sell.volume)}</span>
-                    <span className="text-right">{formatNum(sell.sellPrice)}</span>
-                    <span className="text-right">{formatNum(sell.avgCost)}</span>
+                    <span className="text-right font-number">{formatNum(sell.volume)}</span>
+                    <span className="text-right font-number">{formatNum(sell.sellPrice)}</span>
+                    <span className="text-right font-number">{formatNum(sell.avgCost)}</span>
                     <span
-                      className={`text-right font-medium ${sell.pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                      className={`text-right font-medium font-number ${sell.pnl >= 0 ? 'text-up' : 'text-down'}`}
                     >
                       {formatPnl(sell.pnl)} ₫
                     </span>
                     <span
-                      className={`text-right ${sell.returnPct >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                      className={`text-right font-number ${sell.returnPct >= 0 ? 'text-up' : 'text-down'}`}
                     >
                       {sell.returnPct >= 0 ? '+' : ''}
                       {sell.returnPct.toFixed(1)}%
@@ -92,7 +94,7 @@ export function WinLossList({ data }: Props): JSX.Element {
         <div className="rounded-lg border border-border p-4 text-center">
           <p className="text-xs text-muted-foreground uppercase mb-1">Win Rate</p>
           <p
-            className={`text-2xl font-bold ${data.winRate >= 50 ? 'text-green-500' : 'text-red-500'}`}
+            className={`text-2xl font-bold font-number ${data.winRate >= 50 ? 'text-up' : 'text-down'}`}
           >
             {data.winRate.toFixed(1)}%
           </p>
@@ -100,7 +102,7 @@ export function WinLossList({ data }: Props): JSX.Element {
         <div className="rounded-lg border border-border p-4 text-center">
           <p className="text-xs text-muted-foreground uppercase mb-1">Total Realized P&L</p>
           <p
-            className={`text-2xl font-bold ${data.totalPnl >= 0 ? 'text-green-500' : 'text-red-500'}`}
+            className={`text-2xl font-bold font-number ${data.totalPnl >= 0 ? 'text-up' : 'text-down'}`}
           >
             {formatPnl(data.totalPnl)} ₫
           </p>
