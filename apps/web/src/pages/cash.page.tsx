@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@finance-hub/web-ui';
 import {
   CashStatCards,
   CashChart,
@@ -15,12 +16,7 @@ export function CashPage(): JSX.Element {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between border-b border-border pb-4">
         <h2 className="text-lg font-semibold text-foreground">Cash</h2>
-        <button
-          onClick={() => setModalOpen(true)}
-          className="rounded-md bg-[#fcd535] px-4 py-1.5 text-sm font-semibold text-[#181a20] transition-colors hover:bg-[#f0b90b]"
-        >
-          + Add Transaction
-        </button>
+        <Button onClick={() => setModalOpen(true)}>+ Add Transaction</Button>
       </div>
 
       <CashStatCards stats={CASH_STATS} />
