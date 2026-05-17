@@ -1,5 +1,13 @@
-import { useState } from 'react';
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
+import { useState, useId } from 'react';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  type TooltipContentProps,
+} from 'recharts';
 
 type Range = '1M' | '6M' | '1Y';
 
@@ -32,14 +40,15 @@ const DATA: Record<Range, { month: string; value: number }[]> = {
 
 const RANGES: Range[] = ['1M', '6M', '1Y'];
 
-function ChartTooltip(props: any) {
-  const { active, payload, label } = props;
+function ChartTooltip({ active, payload, label }: TooltipContentProps) {
   if (!active || !payload?.length) return null;
+  const rawValue = payload[0]?.value;
+  const value = typeof rawValue === 'number' ? rawValue : 0;
   return (
     <div className="rounded-md border border-[#2b3139] bg-[#2b3139] px-3 py-2 text-xs">
       <p className="text-[#929aa5]">{label}</p>
       <p className="font-number font-semibold text-[#eaecef]">
-        ₫{((payload[0].value ?? 0) * 1_000_000).toLocaleString('vi-VN')}
+        ₫{(value * 1_000_000).toLocaleString('vi-VN')}
       </p>
     </div>
   );
@@ -48,6 +57,8 @@ function ChartTooltip(props: any) {
 export function AssetHistoryChart(): JSX.Element {
   const [range, setRange] = useState<Range>('6M');
   const data = DATA[range];
+  const uid = useId().replace(/:/g, '');
+  const gradientId = `assetGradient-${uid}`;
 
   return (
     <div className="flex flex-1 flex-col rounded-xl border border-[#2b3139] bg-[#1e2329] p-5">
@@ -76,7 +87,7 @@ export function AssetHistoryChart(): JSX.Element {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
             <defs>
-              <linearGradient id="assetGradient" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#fcd535" stopOpacity={0.25} />
                 <stop offset="100%" stopColor="#fcd535" stopOpacity={0} />
               </linearGradient>
@@ -88,13 +99,13 @@ export function AssetHistoryChart(): JSX.Element {
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip content={<ChartTooltip />} />
+            <Tooltip content={ChartTooltip} />
             <Area
               type="monotone"
               dataKey="value"
               stroke="#fcd535"
               strokeWidth={1.5}
-              fill="url(#assetGradient)"
+              fill={`url(#${gradientId})`}
               dot={false}
               activeDot={{ r: 4, fill: '#fcd535', strokeWidth: 0 }}
             />

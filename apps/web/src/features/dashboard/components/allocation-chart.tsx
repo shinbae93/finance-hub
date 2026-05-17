@@ -1,4 +1,4 @@
-import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
+import { Cell, Pie, PieChart } from 'recharts';
 
 const ALLOCATION_DATA = [
   { name: 'Stocks', value: 45, color: '#fcd535' },
@@ -12,23 +12,21 @@ export function AllocationChart(): JSX.Element {
     <div className="w-[220px] flex-shrink-0 rounded-xl border border-[#2b3139] bg-[#1e2329] p-5">
       <p className="mb-3 text-xs font-medium uppercase tracking-wider text-[#929aa5]">Allocation</p>
       <div className="flex items-center gap-4">
-        <ResponsiveContainer width={80} height={80}>
-          <PieChart>
-            <Pie
-              data={ALLOCATION_DATA}
-              cx="50%"
-              cy="50%"
-              innerRadius={24}
-              outerRadius={38}
-              dataKey="value"
-              strokeWidth={0}
-            >
-              {ALLOCATION_DATA.map((entry) => (
-                <Cell key={entry.name} fill={entry.color} />
-              ))}
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
+        <PieChart width={80} height={80}>
+          <Pie
+            data={ALLOCATION_DATA}
+            cx="50%"
+            cy="50%"
+            innerRadius={24}
+            outerRadius={38}
+            dataKey="value"
+            strokeWidth={0}
+          >
+            {ALLOCATION_DATA.map((entry) => (
+              <Cell key={entry.name} fill={entry.color} />
+            ))}
+          </Pie>
+        </PieChart>
 
         <ul className="flex flex-col gap-1.5">
           {ALLOCATION_DATA.map((entry) => (
